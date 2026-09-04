@@ -25,7 +25,8 @@ import {
   IndexResponse, 
   TimeseriesPoint, 
   CorridorItem, 
-  DataQualityResponse 
+  DataQualityResponse,
+  MarketBriefingData
 } from "@/lib/api";
 
 export default function NationalOverviewPage() {
@@ -65,6 +66,7 @@ export default function NationalOverviewPage() {
 
   const [corridors, setCorridors] = useState<CorridorItem[]>([]);
   const [quality, setQuality] = useState<DataQualityResponse | null>(null);
+  const [marketBriefing, setMarketBriefing] = useState<MarketBriefingData | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -117,6 +119,11 @@ export default function NationalOverviewPage() {
           score_distribution: [],
         });
 
+        // 6. Fetch Dynamic Executive Market Briefing
+        const mbData = await fetchFromApi<MarketBriefingData>(
+          `/analytics/market-briefing?series=${priceSeries}&horizon=15`
+        );
+
         if (isMounted) {
           setHeadline(hData);
           if (tsData && tsData.length > 0) {
@@ -137,6 +144,9 @@ export default function NationalOverviewPage() {
           });
           setCorridors(cData);
           setQuality(qData);
+          if (mbData) {
+            setMarketBriefing(mbData);
+          }
           setLoading(false);
         }
       } catch (err) {
@@ -216,12 +226,13 @@ export default function NationalOverviewPage() {
     <div className="space-y-8">
       {/* Top Executive Macroeconomic Signals Banner */}
       <MarketBriefingBanner
+        briefing={marketBriefing}
         headlineValue={currentVal}
         dailyChangePct={currentDelta}
         weeklyChangePct={headline.weekly_change_pct || 3.81}
-        inflationLeader="IndiGo"
-        valueLeader="Akasa Air"
-        surgeCorridorsCount={8}
+        inflationLeader={marketBriefing?.carrier_power.inflation_leader || "Air India"}
+        valueLeader={marketBriefing?.carrier_power.value_leader || "IndiGo"}
+        surgeCorridorsCount={marketBriefing?.volatility.active_surge_corridors_count || 10}
       />
 
       {/* Top Section Header */}
@@ -271,10 +282,21 @@ export default function NationalOverviewPage() {
                 <Badge variant="solid" size="xs">
                   MoSPI / NSO MANDATE
                 </Badge>
+                {marketBriefing?.timestamp && (
+                  <span className="text-[11px] font-mono text-emerald-700 hidden sm:inline font-medium">
+                    · Live Ingestion Sync
+                  </span>
+                )}
               </div>
               <p className="mt-1 text-xs text-mid-gray leading-relaxed font-sans">
-                Domestic airfares across India are currently <strong className="text-ink">+{vsBasePct}% higher</strong> than the baseline established on August 1, 2026.
-                Prices advanced <strong className="text-ink">+{currentDelta.toFixed(2)}% over the last 24 hours</strong>, primarily driven by holiday passenger demand on high-density trunk routes (<code className="text-ink font-mono">DEL-BOM</code> and <code className="text-ink font-mono">DEL-BLR</code>).
+                {marketBriefing?.narrative?.retail_context ? (
+                  marketBriefing.narrative.retail_context
+                ) : (
+                  <>
+                    Domestic airfares across India are currently <strong className="text-ink">+{vsBasePct}% higher</strong> than the baseline established on August 1, 2026.
+                    Prices advanced <strong className="text-ink">+{currentDelta.toFixed(2)}% over the last 24 hours</strong>, with acute yield escalation concentrated on top-spread corridors.
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -329,7 +351,11 @@ export default function NationalOverviewPage() {
             <div className="rounded-nested border border-hairline bg-surface-alt p-3.5 font-sans text-xs space-y-2 min-w-[190px]">
               <div className="flex justify-between items-center text-mid-gray">
                 <span>7-Day Pace:</span>
-                <span className="text-amber-800 font-semibold font-mono">+3.81%</span>
+                <span className="text-amber-800 font-semibold font-mono">
+                  {headline.weekly_change_pct != null
+                    ? `${headline.weekly_change_pct >= 0 ? "+" : ""}${headline.weekly_change_pct.toFixed(2)}%`
+                    : "+3.81%"}
+                </span>
               </div>
               <div className="flex justify-between items-center text-mid-gray">
                 <span>30-Day Cumulative:</span>

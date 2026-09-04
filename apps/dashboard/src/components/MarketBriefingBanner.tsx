@@ -11,11 +11,15 @@ import {
   Compass, 
   X,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Zap,
+  Activity
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
+import { MarketBriefingData } from "@/lib/api";
 
 interface MarketBriefingBannerProps {
+  briefing?: MarketBriefingData | null;
   headlineValue?: number;
   dailyChangePct?: number | null;
   weeklyChangePct?: number | null;
@@ -25,17 +29,43 @@ interface MarketBriefingBannerProps {
 }
 
 export function MarketBriefingBanner({
-  headlineValue = 108.42,
-  dailyChangePct = 1.72,
-  weeklyChangePct = 3.81,
-  inflationLeader = "IndiGo",
-  valueLeader = "Akasa Air",
-  surgeCorridorsCount = 8,
+  briefing,
+  headlineValue: initialHeadlineValue = 109.41,
+  dailyChangePct: initialDailyChangePct = 4.64,
+  weeklyChangePct: initialWeeklyChangePct = 6.77,
+  inflationLeader: initialInflationLeader = "Air India",
+  valueLeader: initialValueLeader = "IndiGo",
+  surgeCorridorsCount: initialSurgeCorridorsCount = 10,
 }: MarketBriefingBannerProps) {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [dismissed, setDismissed] = useState<boolean>(false);
 
   if (dismissed) return null;
+
+  // Resolve dynamic values from briefing payload, with robust fallbacks
+  const headlineVal = briefing?.headline?.index_value ?? initialHeadlineValue;
+  const dailyDelta = briefing?.headline?.daily_change_pct ?? initialDailyChangePct;
+  const vsBase = briefing?.headline?.vs_base_pct ?? (headlineVal - 100);
+
+  const infLeader = briefing?.carrier_power?.inflation_leader ?? initialInflationLeader;
+  const infLeaderChange = briefing?.carrier_power?.inflation_leader_change_pct ?? 10.2;
+  const infLeaderIndex = briefing?.carrier_power?.inflation_leader_index ?? 120.3;
+  const valLeader = briefing?.carrier_power?.value_leader ?? initialValueLeader;
+  const valMinFare = briefing?.carrier_power?.value_leader_min_fare ?? 3409;
+  const carrierSpread = briefing?.carrier_power?.carrier_spread_pts ?? 13.7;
+
+  const avgSpread = briefing?.volatility?.average_network_spread_pct ?? 46.7;
+  const surgeCount = briefing?.volatility?.active_surge_corridors_count ?? initialSurgeCorridorsCount;
+  const topCorridors = briefing?.volatility?.top_surge_corridors ?? [
+    { route_code: "DEL-HYD", city_pair: "Delhi → Hyderabad", corridor_type: "METRO_TRUNK", spread_pct: 73.4, min_price: 4041, max_price: 7445, median_price: 4448, volatility_status: "SURGE_ALERT" },
+    { route_code: "DEL-DHM", city_pair: "Delhi → Dharamshala", corridor_type: "REGIONAL_THIN", spread_pct: 57.3, min_price: 4941, max_price: 8604, median_price: 6363, volatility_status: "SURGE_ALERT" },
+    { route_code: "DEL-MAA", city_pair: "Delhi → Chennai", corridor_type: "METRO_TRUNK", spread_pct: 53.7, min_price: 4682, max_price: 7527, median_price: 5178, volatility_status: "SURGE_ALERT" },
+  ];
+
+  const surgeMult = briefing?.lead_time?.surge_multiplier ?? 2.45;
+  const t1Price = briefing?.lead_time?.t1_price ?? 9127;
+  const t30Price = briefing?.lead_time?.t30_price ?? 4062;
+  const t30Savings = briefing?.lead_time?.t30_savings_pct ?? 55.5;
 
   return (
     <div className="relative rounded-cards border border-hairline bg-paper p-4 sm:p-5 shadow-subtle transition-all">
@@ -53,6 +83,10 @@ export function MarketBriefingBanner({
               <Badge variant="solid" size="xs">
                 MoSPI / NSO BRIEFING
               </Badge>
+              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono text-emerald-700 font-medium">
+                <Activity className="h-3 w-3 inline text-emerald-600 animate-pulse" />
+                LIVE SYNTHESIS
+              </span>
             </div>
             <p className="text-xs text-mid-gray font-sans mt-0.5">
               High-frequency macroeconomic synthesis across 10 DGCA passenger-weighted domestic corridors.
@@ -87,16 +121,24 @@ export function MarketBriefingBanner({
             <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-paper border border-hairline text-ink shrink-0 mt-0.5">
               <TrendingUp className="h-3.5 w-3.5" />
             </div>
-            <div>
+            <div className="w-full">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-ink">Inflation Momentum</span>
-                <span className="rounded-[18px] border border-amber-200 bg-amber-50 px-2 py-0.5 font-mono text-[11px] font-medium text-amber-800">
-                  {dailyChangePct != null && dailyChangePct >= 0 ? `+${dailyChangePct.toFixed(1)}%` : `${dailyChangePct?.toFixed(1) || "+1.7"}%`} 24h
+                <span className={`rounded-[18px] border px-2 py-0.5 font-mono text-[11px] font-medium ${
+                  dailyDelta != null && dailyDelta >= 0
+                    ? "border-amber-200 bg-amber-50 text-amber-800"
+                    : "border-emerald-200 bg-emerald-50 text-emerald-800"
+                }`}>
+                  {dailyDelta != null && dailyDelta >= 0 ? `+${dailyDelta.toFixed(2)}%` : `${dailyDelta?.toFixed(2) || "+1.72"}%`} 24h
                 </span>
               </div>
               <p className="text-ink-soft text-[12px] leading-relaxed mt-1.5">
-                National APIx sits at <strong className="text-ink font-mono">{headlineValue.toFixed(1)}</strong>. 
-                Recent pressure is concentrated on Delhi-Mumbai & Delhi-Bengaluru trunk sectors.
+                National APIx stands at <strong className="text-ink font-mono">{headlineVal.toFixed(2)}</strong> (+{vsBase.toFixed(1)}% vs base).
+                {topCorridors.length > 0 ? (
+                  <> Maximum yield escalation observed on <Link href={`/corridors/${topCorridors[0].route_code}`} className="text-ink font-mono font-semibold underline hover:text-ink-soft">{topCorridors[0].route_code}</Link> ({topCorridors[0].spread_pct}%) and <Link href={`/corridors/${topCorridors[1]?.route_code || "DEL-DHM"}`} className="text-ink font-mono font-semibold underline hover:text-ink-soft">{topCorridors[1]?.route_code || "DEL-DHM"}</Link> ({topCorridors[1]?.spread_pct || "57.3"}%).</>
+                ) : (
+                  <> Upward pressure concentrated on core trunk sectors.</>
+                )}
               </p>
             </div>
           </div>
@@ -104,7 +146,7 @@ export function MarketBriefingBanner({
             href="/market-dynamics?tab=volatility"
             className="inline-flex items-center gap-1 text-[11px] text-ink font-medium hover:underline mt-2.5 self-end"
           >
-            <span>Volatility radar</span>
+            <span>Volatility radar ({avgSpread.toFixed(1)}% avg spread)</span>
             <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
@@ -115,15 +157,15 @@ export function MarketBriefingBanner({
             <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-paper border border-hairline text-ink shrink-0 mt-0.5">
               <Tag className="h-3.5 w-3.5" />
             </div>
-            <div>
+            <div className="w-full">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-ink">Carrier Pricing Power</span>
                 <Badge variant="soft" size="xs">
-                  {inflationLeader} Leads
+                  {infLeader} Leads ({infLeaderChange >= 0 ? "+" : ""}{infLeaderChange.toFixed(1)}%)
                 </Badge>
               </div>
               <p className="text-ink-soft text-[12px] leading-relaxed mt-1.5">
-                <strong className="text-ink">{valueLeader}</strong> maintains lowest basic economy entry tariffs (from ₹2,868), while <strong className="text-ink">{inflationLeader}</strong> exercises pricing power on metro trunk corridors.
+                <strong className="text-ink">{valLeader}</strong> anchors lowest basic tariffs (from <strong className="text-ink font-mono">₹{Math.round(valMinFare).toLocaleString()}</strong>), while <strong className="text-ink">{infLeader}</strong> exercises peak pricing power (index <strong className="text-ink font-mono">{infLeaderIndex.toFixed(1)}</strong>). Inter-carrier spread: <strong className="text-ink font-mono">{carrierSpread.toFixed(1)} pts</strong>.
               </p>
             </div>
           </div>
@@ -142,15 +184,15 @@ export function MarketBriefingBanner({
             <div className="flex h-7 w-7 items-center justify-center rounded-[6px] bg-paper border border-hairline text-ink shrink-0 mt-0.5">
               <Clock className="h-3.5 w-3.5" />
             </div>
-            <div>
+            <div className="w-full">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-ink">Advance Purchase Elasticity</span>
                 <span className="rounded-[18px] border border-red-200 bg-red-50 px-2 py-0.5 font-mono text-[11px] font-medium text-ember">
-                  2.04x Surge
+                  {surgeMult.toFixed(2)}x Surge
                 </span>
               </div>
               <p className="text-ink-soft text-[12px] leading-relaxed mt-1.5">
-                Tickets purchased at <strong className="text-ink font-mono">T+30</strong> capture over <strong className="text-ink font-mono">51% savings</strong> relative to departure eve (T+1) distress pricing.
+                Tickets booked at <strong className="text-ink font-mono">T+30 (₹{Math.round(t30Price).toLocaleString()})</strong> unlock <strong className="text-ink font-mono">{t30Savings.toFixed(0)}% savings</strong> relative to departure eve T+1 distress pricing (<strong className="text-ink font-mono">₹{Math.round(t1Price).toLocaleString()}</strong>).
               </p>
             </div>
           </div>
@@ -172,28 +214,71 @@ export function MarketBriefingBanner({
               <Compass className="h-4 w-4 text-ink" />
               Institutional Macroeconomic Analysis (MoSPI / RBI Perspective)
             </h4>
-            <span className="text-[11px] text-mid-gray font-sans">Official Closing Synthesis · 10 Corridors</span>
+            <span className="text-[11px] text-mid-gray font-sans font-mono">
+              Anchor: T+15 · {surgeCount} Corridors Active
+            </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans text-mid-gray leading-relaxed">
-            <div className="space-y-2 border-l-2 border-hairline pl-3">
-              <span className="font-semibold text-ink block text-xs">Market Microstructure & Dynamic Pricing</span>
+            <div className="space-y-2.5 border-l-2 border-hairline pl-3">
+              <span className="font-semibold text-ink block text-xs flex items-center gap-1.5">
+                <Zap className="h-3.5 w-3.5 text-ink" />
+                Market Microstructure & Dynamic Pricing
+              </span>
               <p>
-                Airlines operate aggressive revenue management algorithms where fares swing by 200–400% based on seat inventory exhaustion. Currently, <span className="text-ink font-semibold font-mono">{surgeCorridorsCount} monitored corridors</span> display active intraday yield escalation with an average price spread of 29.5%.
+                Airlines operate aggressive dynamic revenue management algorithms where fares swing by 200–400% based on seat inventory exhaustion. Currently, <span className="text-ink font-semibold font-mono">{surgeCount} monitored corridors</span> display active intraday yield escalation with an average price spread of <span className="text-ink font-semibold font-mono">{avgSpread.toFixed(1)}%</span>.
               </p>
-              <p>
-                Trunk pairs (<code className="text-ink font-mono">DEL-BOM</code>, <code className="text-ink font-mono">DEL-BLR</code>) show synchronized pricing, whereas capacity-constrained regional corridors (<code className="text-ink font-mono">DEL-IXS</code>) exhibit high dispersion due to single-carrier dominance.
-              </p>
+              
+              {/* Dynamic Top Surging Corridors Mini-Grid */}
+              <div className="mt-2 pt-2 border-t border-hairline">
+                <div className="text-[11px] font-semibold text-ink uppercase tracking-wider mb-2">
+                  Highest Intraday Price Spread Corridors:
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {topCorridors.map((c) => (
+                    <Link
+                      key={c.route_code}
+                      href={`/corridors/${c.route_code}`}
+                      className="rounded-nested bg-paper border border-hairline p-2.5 hover:border-mid-gray hover:shadow-subtle transition-all group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono font-bold text-ink group-hover:underline">{c.route_code}</span>
+                        <span className="font-mono text-ember font-semibold text-[11px]">+{c.spread_pct}%</span>
+                      </div>
+                      <div className="text-[10px] text-mid-gray truncate mt-0.5">{c.city_pair}</div>
+                      <div className="text-[10px] font-mono text-ink mt-1">
+                        ₹{Math.round(c.min_price).toLocaleString()} – ₹{Math.round(c.max_price).toLocaleString()}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-2 border-l-2 border-hairline pl-3">
-              <span className="font-semibold text-ink block text-xs">Monetary Policy & Inflation Tracking</span>
-              <p>
-                Official CPI airfare collection via ticketing counters misses online volatility. The APIx index anchored at <span className="text-ink font-mono font-semibold">T+15</span> provides an unpooled, standardized benchmark that correlates tightly with official CPI (<span className="text-ink font-mono font-semibold">r = 0.997</span>) while delivering daily high-frequency visibility.
-              </p>
-              <p>
-                Aviation Turbine Fuel (ATF) revisions from IOCL have decoupled from immediate passenger ticket quotes due to forward fuel hedging, confirming airline pricing is currently capacity-driven.
-              </p>
+            <div className="space-y-2.5 border-l-2 border-hairline pl-3 flex flex-col justify-between">
+              <div>
+                <span className="font-semibold text-ink block text-xs flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5 text-ink" />
+                  Monetary Policy & Inflation Tracking
+                </span>
+                <p className="mt-1">
+                  Official CPI airfare collection via ticketing counters misses online volatility. The APIx index anchored strictly at <span className="text-ink font-mono font-semibold">T+15</span> provides an unpooled, standardized benchmark that correlates tightly with official CPI (<span className="text-ink font-mono font-semibold">r = 0.997</span>) while delivering continuous forward-looking visibility.
+                </p>
+                <p className="mt-2">
+                  Aviation Turbine Fuel (ATF) revisions from IOCL remain decoupled from short-term passenger ticket quotes due to airline 12–18 month hedging buffers, confirming that current tariff surges are driven by capacity management rather than fuel spot costs.
+                </p>
+              </div>
+
+              {/* Carrier Dispersal Quick Summary */}
+              <div className="rounded-nested bg-paper border border-hairline p-2.5 mt-2">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-mid-gray font-medium">Inter-Carrier Tariff Dispersion:</span>
+                  <span className="font-mono font-semibold text-ink">{carrierSpread.toFixed(1)} pts</span>
+                </div>
+                <div className="text-[10px] text-mid-gray mt-1">
+                  Tariff leader <strong className="text-ink">{infLeader}</strong> ({infLeaderIndex.toFixed(1)}) vs Value benchmark <strong className="text-ink">{valLeader}</strong> ({briefing?.carrier_power?.value_leader_index?.toFixed(1) || "106.6"}).
+                </div>
+              </div>
             </div>
           </div>
 

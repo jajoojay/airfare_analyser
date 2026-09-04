@@ -260,3 +260,69 @@ export interface OTADispersionRankingResponse {
   horizon_days: number;
   platform_rankings: OTAPlatformRanking[];
 }
+
+export interface MarketBriefingData {
+  timestamp: string;
+  headline: {
+    index_value: number;
+    daily_change_pct: number | null;
+    weekly_change_pct: number | null;
+    monthly_change_pct: number | null;
+    vs_base_pct: number;
+    period_date: string;
+    anchor_horizon: string;
+  };
+  carrier_power: {
+    inflation_leader: string;
+    inflation_leader_code: string;
+    inflation_leader_index: number;
+    inflation_leader_change_pct: number;
+    value_leader: string;
+    value_leader_code: string;
+    value_leader_index: number;
+    value_leader_min_fare: number;
+    carrier_spread_pts: number;
+    carriers: Array<{
+      carrier_code: string;
+      carrier_name: string;
+      index_value: number;
+      daily_change_pct: number;
+      routes_covered: number;
+    }>;
+  };
+  volatility: {
+    average_network_spread_pct: number;
+    active_surge_corridors_count: number;
+    monitored_corridors_count: number;
+    top_surge_corridors: Array<{
+      route_code: string;
+      city_pair: string;
+      origin: string;
+      destination: string;
+      corridor_type: string;
+      spread_pct: number;
+      min_price: number;
+      max_price: number;
+      median_price: number;
+      volatility_status: string;
+    }>;
+  };
+  lead_time: {
+    surge_multiplier: number;
+    t1_price: number;
+    t7_price: number;
+    t15_price: number;
+    t30_price: number;
+    t45_price: number;
+    t30_savings_pct: number;
+    t45_savings_pct: number;
+  };
+  narrative: {
+    retail_context: string;
+    carrier_summary: string;
+    elasticity_summary: string;
+    microstructure: string;
+    monetary_policy: string;
+  };
+}
+

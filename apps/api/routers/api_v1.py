@@ -878,3 +878,26 @@ def get_route_volatility_trajectory(
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
     return result
+
+
+# -----------------------------------------------------------------------------
+# Executive Market Intelligence & Signals Briefing
+# -----------------------------------------------------------------------------
+
+
+@router.get(
+    "/analytics/market-briefing",
+    tags=["Statistical Analytics"],
+    summary="Executive Market Intelligence & Macroeconomic Signals",
+    description="Returns high-frequency executive briefing signals across all 10 monitored corridors: inflation momentum, carrier pricing power, volatility radar, and advance elasticity.",
+)
+def get_executive_market_briefing(
+    horizon: int = Query(15, description="Advance purchase horizon days (1, 7, 15, 30, 45)"),
+    series: str = Query("BASE_FARE", pattern="^(BASE_FARE|TOTAL_PRICE)$", description="Price series (BASE_FARE or TOTAL_PRICE)"),
+    db: Session = Depends(get_db),
+):
+    """Retrieves real-time data-driven executive signals synthesizing carrier power, network volatility, and yield elasticity."""
+    from packages.statistics.market_briefing import MarketBriefingService
+
+    return MarketBriefingService.get_market_briefing(db, horizon_days=horizon, series=series)
+
