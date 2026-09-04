@@ -12,7 +12,7 @@ def test_root_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert "India Airfare Price Observatory" in data["service"]
-    assert data["anchor_lead_time"] == "T+14"
+    assert data["anchor_lead_time"] == "T+15"
     assert data["active_methodology_version"] == "APIX-2.0"
 
 

@@ -40,8 +40,8 @@ def test_full_collection_job_pipeline():
             route_id=route.id,
             source_id=source.id,
             search_date=datetime.date(2026, 9, 1),
-            travel_date=datetime.date(2026, 9, 15),
-            advance_days=14,
+            travel_date=datetime.date(2026, 9, 16),
+            advance_days=15,
             status="PENDING",
         )
         db.add(job)

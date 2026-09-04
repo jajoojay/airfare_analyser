@@ -27,7 +27,7 @@ class TemporalAggregationEngine:
                 dt = datetime.date.fromisoformat(dt)
             iso_year, iso_week, _ = dt.isocalendar()
             series = r.get("index_series", "BASE_FARE")
-            itype = r.get("index_type", "HEADLINE_T14")
+            itype = r.get("index_type", "HEADLINE_T15")
 
             key = (iso_year, iso_week, series, itype)
             if key not in grouped:
@@ -86,7 +86,7 @@ class TemporalAggregationEngine:
             if isinstance(dt, str):
                 dt = datetime.date.fromisoformat(dt)
             series = r.get("index_series", "BASE_FARE")
-            itype = r.get("index_type", "HEADLINE_T14")
+            itype = r.get("index_type", "HEADLINE_T15")
 
             key = (dt.year, dt.month, series, itype)
             if key not in grouped:

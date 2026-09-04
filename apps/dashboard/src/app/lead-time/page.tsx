@@ -33,7 +33,7 @@ export default function LeadTimeElasticityPage() {
     lead_time_curve: [
       { advance_days: 45, horizon: "T+45", price: 3000, label: "Early Bird" },
       { advance_days: 30, horizon: "T+30", price: 3240, label: "Advance Planning" },
-      { advance_days: 14, horizon: "T+14", price: 3750, label: "Headline Anchor" },
+      { advance_days: 15, horizon: "T+15", price: 3750, label: "Headline Anchor" },
       { advance_days: 7, horizon: "T+7", price: 4800, label: "Short Planning" },
       { advance_days: 1, horizon: "T+1", price: 6120, label: "Departure Eve" },
     ],
@@ -75,7 +75,7 @@ export default function LeadTimeElasticityPage() {
   const inventoryMap: Record<string, string> = {
     "T+45": ">80% Capacity Open",
     "T+30": "~65% Capacity Open",
-    "T+14": "~45% Capacity Open",
+    "T+15": "~45% Capacity Open",
     "T+7": "~20% Capacity Open",
     "T+1": "<8% Distress Capacity",
   };
@@ -90,7 +90,7 @@ export default function LeadTimeElasticityPage() {
       price: c.price || 3000,
       multiplier: `${mult.toFixed(2)}x`,
       inventory: inventoryMap[c.horizon] || "Commercial Availability",
-      isAnchor: c.horizon === "T+14",
+      isAnchor: c.horizon === "T+15",
       isPeak: c.horizon === "T+1",
     };
   });
@@ -163,10 +163,10 @@ export default function LeadTimeElasticityPage() {
               <span>Consumer Booking Insight</span>
             </div>
             <p className="text-mid-gray text-xs leading-normal">
-              Notice the inflection cliff at <strong className="text-ink">T+7</strong>. Carriers begin aggressive bucket closure 7 days out. Booking at <strong className="text-ink">T+14</strong> captures 82% of the early-bird pricing advantage.
+              Notice the inflection cliff at <strong className="text-ink">T+7</strong>. Carriers begin aggressive bucket closure 7 days out. Booking at <strong className="text-ink">T+15</strong> captures 82% of the early-bird pricing advantage.
             </p>
             <div className="border-t border-hairline pt-2 flex justify-between font-mono text-xs">
-              <span className="text-mid-gray">T+14 Anchor Fare:</span>
+              <span className="text-mid-gray">T+15 Anchor Fare:</span>
               <strong className="text-ink">₹{anchorPrice.toLocaleString()}</strong>
             </div>
           </div>
@@ -250,7 +250,7 @@ export default function LeadTimeElasticityPage() {
             Why Unpooled Horizons Are Statistically Essential (Statistical Methodology Standard)
           </h4>
           <p className="leading-relaxed">
-            Conventional flight aggregators calculate a raw median across all available flight quotes regardless of departure date. If booking patterns shift from business (T+1) to holiday leisure (T+45), an unanchored index creates an artificial illusion of massive airfare deflation. The India Airfare Price Observatory maintains independent sub-indices for each lead-time horizon and isolates the national headline benchmark strictly at <strong className="text-ink">T+14</strong>.
+            Conventional flight aggregators calculate a raw median across all available flight quotes regardless of departure date. If booking patterns shift from business (T+1) to holiday leisure (T+45), an unanchored index creates an artificial illusion of massive airfare deflation. The India Airfare Price Observatory maintains independent sub-indices for each lead-time horizon and isolates the national headline benchmark strictly at <strong className="text-ink">T+15</strong>.
           </p>
         </div>
       </div>

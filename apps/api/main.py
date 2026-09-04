@@ -28,12 +28,58 @@ async def lifespan(app: FastAPI):
     print("[*] CollectionScheduler cleanly stopped.")
 
 
+openapi_tags = [
+    {
+        "name": "Public National Indices",
+        "description": "Official daily Laspeyres Headline Index (T+15) and advance purchase Sub-Indices (T+1, T+7, T+15, T+30, T+45) with day-on-day rates of change and sample coverage rates.",
+    },
+    {
+        "name": "Corridor Intelligence",
+        "description": "City-pair analytics across 10 monitored domestic corridors, DGCA passenger weights, advance yield curves, and statutory 5-component fare deconstruction.",
+    },
+    {
+        "name": "Live Scraper Pipeline",
+        "description": "Real-time dual-feed ingestion engine (Carrier Direct + Google Flights RPC), live quote feeds, and automated scheduler controls.",
+    },
+    {
+        "name": "Multi-OTA & Carrier Pricing",
+        "description": "Side-by-side airfare comparison across Direct Carriers and top 6 Indian OTAs (MakeMyTrip, EaseMyTrip, Ixigo, Cleartrip, Yatra, Skyscanner) with canonical pricing.",
+    },
+    {
+        "name": "AI Copilot",
+        "description": "Econometric matrix queries and macro context synthesis via OpenRouter inference.",
+    },
+    {
+        "name": "Data Governance & Exports",
+        "description": "Tamper-evident raw payload audit trails, quality distribution metrics, and bulk data export endpoints.",
+    },
+]
+
 app = FastAPI(
-    title="India Airfare Price Observatory API",
-    description="Production High-Frequency Statistical Airfare Price Index & Monitoring Platform for the Ministry of Statistics and Programme Implementation (MoSPI / NSO)",
+    title="India Airfare Price Observatory Public API",
+    summary="Production High-Frequency Statistical Airfare Price Index & Monitoring Platform (APIX-2.0)",
+    description=r"""
+### Ministry of Statistics and Programme Implementation (MoSPI / NSO)
+
+The **India Airfare Price Observatory** is an institutional econometric platform providing high-frequency, tamper-evident airfare indices, carrier inflation dynamics, and corridor yield curves across the Indian domestic aviation network.
+
+#### Core Public API Endpoints
+* **`GET /api/v1/index/daily`**: Daily Laspeyres Headline and Sub-Index time-series.
+* **`GET /api/v1/corridors/{pair}`**: Deep-dive corridor intelligence and 5-part fee decomposition.
+* **`GET /api/v1/corridors`**: Overview of all 10 monitored domestic corridors.
+* **`GET /api/v1/quotes/live`**: Live verified quotes stream with authentic source badges & timestamps.
+* **`POST /api/v1/collection/run`**: Trigger real scraper ingestion across routes & horizons.
+
+#### Econometric Methodology
+* **Formula**: Fixed-Base Laspeyres Price Index ($I_t = \frac{\sum P_t \cdot Q_0}{\sum P_0 \cdot Q_0} \times 100$)
+* **Base Period**: August 1, 2026 ($I_0 = 100.00$)
+* **Anchor Horizon**: Departure minus 15 days ($T+15$)
+* **Passenger Weights**: Official DGCA City-Pair Traffic Statistics (DGCA_2026_V1)
+""",
     version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    openapi_tags=openapi_tags,
     lifespan=lifespan,
 )
 

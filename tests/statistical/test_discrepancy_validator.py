@@ -40,7 +40,7 @@ def test_cross_feed_exact_parity(db_session):
         rpc_quotes=rpc_quotes,
         route_code="DEL-BOM",
         travel_date=datetime.date(2026, 9, 20),
-        advance_days=14,
+        advance_days=15,
     )
 
     assert res["parity_count"] == 1
@@ -73,7 +73,7 @@ def test_cross_feed_aggregator_markup(db_session):
         rpc_quotes=rpc_quotes,
         route_code="DEL-BOM",
         travel_date=datetime.date(2026, 9, 20),
-        advance_days=14,
+        advance_days=15,
     )
 
     assert res["aggregator_markup_count"] == 1
@@ -99,7 +99,7 @@ def test_cross_feed_rpc_fallback_activation(db_session):
         rpc_quotes=rpc_quotes,
         route_code="DEL-BOM",
         travel_date=datetime.date(2026, 9, 20),
-        advance_days=14,
+        advance_days=15,
     )
 
     assert res["rpc_fallback_quotes_count"] == 1

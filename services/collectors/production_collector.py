@@ -29,7 +29,7 @@ CORRIDORS = [
     "DEL-DHM",
 ]
 
-HORIZONS = [1, 7, 14, 30, 45]
+HORIZONS = [1, 7, 15, 30, 45]
 
 
 def run_production_collection(
@@ -80,6 +80,29 @@ def run_production_collection(
 
     duration = (datetime.datetime.now(datetime.UTC) - start_time).total_seconds()
 
+    # Recalculate official Laspeyres indices, carrier inflation, and volatility
+    from database.session import SessionLocal
+    from packages.schemas.models import Route
+    from packages.statistics.carrier_inflation import CarrierInflationService
+    from packages.statistics.volatility import VolatilityService
+    from services.index_engine.calculator_service import DailyIndexCalculatorService
+
+    db_calc = SessionLocal()
+    today = datetime.date.today()
+    indices_count = 0
+    try:
+        calc_res = DailyIndexCalculatorService.calculate_day_indices(db=db_calc, observation_date=today)
+        indices_count = len(calc_res) if calc_res else 0
+        CarrierInflationService.calculate_carrier_indices(db=db_calc, observation_date=today, horizon_days=15)
+        for r in db_calc.query(Route).filter(Route.active).all():
+            VolatilityService.calculate_corridor_volatility(
+                db=db_calc, route_id=r.id, calculation_date=today, horizon_days=15, save_to_db=True
+            )
+    except Exception as e:
+        print(f"[!] Post-collection index calculation error: {e}")
+    finally:
+        db_calc.close()
+
     summary = {
         "status": "COMPLETED",
         "corridors_processed": len(corridors),
@@ -88,6 +111,7 @@ def run_production_collection(
         "failed_search_matrices": failed_runs,
         "total_authentic_quotes_persisted": total_quotes_collected,
         "total_flights_evaluated": total_evaluated,
+        "indices_recalculated": indices_count,
         "duration_seconds": round(duration, 2),
     }
 

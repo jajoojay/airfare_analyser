@@ -161,7 +161,7 @@ export default function RouteMatrixPage() {
                 <th className="px-6 py-3.5 font-medium">Classification</th>
                 <th className="px-6 py-3.5 font-medium">DGCA Weight</th>
                 <th className="px-6 py-3.5 font-medium">Median Base Fare</th>
-                <th className="px-6 py-3.5 font-medium">Route Index (T+14)</th>
+                <th className="px-6 py-3.5 font-medium">Route Index (T+15)</th>
                 <th className="px-6 py-3.5 font-medium">1-Day</th>
                 <th className="px-6 py-3.5 font-medium">7-Day</th>
                 <th className="px-6 py-3.5 font-medium">30-Day</th>

@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     # Statistical Methodology Configuration
     ACTIVE_METHODOLOGY_VERSION: str = "APIX-2.0"
     ACTIVE_WEIGHT_VERSION: str = "DGCA_2026_V1"
-    ANCHOR_LEAD_TIME: str = "T+14"
+    ANCHOR_LEAD_TIME: str = "T+15"
     BASE_PERIOD: str = "2026-08-01"
     MINIMUM_COVERAGE_RATE: float = 80.0
 

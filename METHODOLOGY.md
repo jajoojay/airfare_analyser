@@ -8,13 +8,13 @@
 
 The daily **India Airfare Price Index** ($I_t$) is computed using a Modified Laspeyres price index formula:
 
-$$I_t = 100 \times \sum_{j=1}^{M} w_j \times \left( \frac{P_{j,t,T+14}}{P_{j,0,T+14}} \right)$$
+$$I_t = 100 \times \sum_{j=1}^{M} w_j \times \left( \frac{P_{j,t,T+15}}{P_{j,0,T+15}} \right)$$
 
 Where:
 - $I_t$: National headline airfare price index on observation day $t$.
 - $w_j$: Fixed normalized passenger volume weight for domestic route corridor $j$ (source: DGCA domestic scheduled traffic), satisfying $\sum_{j=1}^{M} w_j = 1.000000 \pm 10^{-6}$.
-- $P_{j,t,T+14}$: Representative airfare on route corridor $j$ on observation date $t$ anchored at **$T+14$** advance purchase.
-- $P_{j,0,T+14}$: Base period representative airfare on route corridor $j$ (Base Period: August 1, 2026 = 100.00).
+- $P_{j,t,T+15}$: Representative airfare on route corridor $j$ on observation date $t$ anchored at **$T+15$** advance purchase.
+- $P_{j,0,T+15}$: Base period representative airfare on route corridor $j$ (Base Period: August 1, 2026 = 100.00).
 - $M$: Number of monitored corridors in the basket ($M=10$).
 
 ---
@@ -29,12 +29,12 @@ Where:
   $$P_{j,t,h} = \text{median}_{c \in \text{Airlines}} (P_{j,t,h,c})$$
 - **Result:** Changes in ticket mix or premium seat ratios have **0% mathematical impact** on the index.
 
-### Defense 2: Unpooled Lead Times ($T+14$ Headline Anchor)
+### Defense 2: Unpooled Lead Times ($T+15$ Headline Anchor)
 - **The Real-World Confounding Problem:** Averaging $T+1$ (departure eve) with $T+45$ (early bird) distorts the series, because last-minute prices reflect passenger urgency rather than systemic macroeconomic inflation.
-- **The Observatory Guarantee:** The headline index is anchored strictly at **$T+14$** (standard 2-week advance purchase). All other horizons are published as isolated, unpooled sub-indices:
+- **The Observatory Guarantee:** The headline index is anchored strictly at **$T+15$** (standard 2-week advance purchase). All other horizons are published as isolated, unpooled sub-indices:
   - $\text{SUB\_T1}$: 1-day advance (urgent travel)
   - $\text{SUB\_T7}$: 7-day advance (weekly business)
-  - $\text{SUB\_T14}$: 14-day advance (official headline anchor)
+  - $\text{SUB\_T15}$: 15-day advance (official headline anchor)
   - $\text{SUB\_T30}$: 30-day advance (monthly planned travel)
   - $\text{SUB\_T45}$: 45-day advance (early bird holiday)
 

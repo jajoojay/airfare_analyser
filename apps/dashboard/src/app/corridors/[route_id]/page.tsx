@@ -58,7 +58,7 @@ export default function CorridorDetailPage() {
     ],
   });
 
-  const [otaHorizon, setOtaHorizon] = useState<number>(14);
+  const [otaHorizon, setOtaHorizon] = useState<number>(15);
   const [otaFlights, setOtaFlights] = useState<OTACommonFlight[]>([
     {
       flight_number: "6E-205",
@@ -254,7 +254,7 @@ export default function CorridorDetailPage() {
         <StatCard
           title="Basic Economy Fare"
           value={`₹${Math.round(fd.base_fare).toLocaleString()}`}
-          subtitle="Median basic fare (T+14 anchor)"
+          subtitle="Median basic fare (T+15 anchor)"
           icon={Plane}
           badge="Pure Tariff"
           badgeVariant="neutral"
@@ -407,7 +407,7 @@ export default function CorridorDetailPage() {
           {/* Horizon Selector */}
           <div className="flex items-center gap-1 rounded-[18px] border border-hairline bg-canvas p-1 self-start sm:self-auto">
             <span className="text-[11px] font-mono text-mid-gray px-2">Booking Window:</span>
-            {([1, 7, 14, 30, 45] as const).map((h) => (
+            {([1, 7, 15, 30, 45] as const).map((h) => (
               <button
                 key={h}
                 onClick={() => setOtaHorizon(h)}
@@ -641,7 +641,7 @@ export default function CorridorDetailPage() {
             </p>
           </div>
           <Badge variant="soft" size="xs">
-            T+14 Standard Anchor
+            T+15 Standard Anchor
           </Badge>
         </div>
 

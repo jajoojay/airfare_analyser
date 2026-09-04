@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 export default function PriceFluctuationsPage() {
-  const [horizon, setHorizon] = useState<number>(14);
+  const [horizon, setHorizon] = useState<number>(15);
   const [volatilityData, setVolatilityData] = useState<VolatilityResponse | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<string>("DEL-BOM");
   const [routeQuotes, setRouteQuotes] = useState<RouteTrajectoryResponse | null>(null);
@@ -68,7 +68,7 @@ export default function PriceFluctuationsPage() {
         badgeVariant="solid"
         action={
           <div className="flex items-center gap-1.5 rounded-[18px] border border-hairline bg-canvas p-1">
-            {([1, 7, 14, 30, 45] as const).map((h) => (
+            {([1, 7, 15, 30, 45] as const).map((h) => (
               <button
                 key={h}
                 onClick={() => setHorizon(h)}

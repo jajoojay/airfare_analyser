@@ -548,12 +548,12 @@ function GovernanceContent() {
             </div>
 
             <p className="text-xs text-ink-soft font-sans leading-relaxed">
-              The national headline airfare index measures relative price changes weighted by base-period passenger travel volumes, anchored at a standardized 14-day advance purchase window:
+              The national headline airfare index measures relative price changes weighted by base-period passenger travel volumes, anchored at a standardized 15-day advance purchase window:
             </p>
 
             <div className="rounded-nested border border-hairline bg-surface-alt p-6 font-mono text-center space-y-2">
               <div className="text-xl sm:text-2xl font-bold text-ink tracking-wide">
-                I<sub>t</sub> = 100 × ∑ [ w<sub>j</sub> × ( P<sub>j, t, T+14</sub> / P<sub>j, 0, T+14</sub> ) ]
+                I<sub>t</sub> = 100 × ∑ [ w<sub>j</sub> × ( P<sub>j, t, T+15</sub> / P<sub>j, 0, T+15</sub> ) ]
               </div>
               <div className="text-xs text-mid-gray">
                 Where ∑ w<sub>j</sub> = 1.000 across all 10 monitored domestic corridors
@@ -568,9 +568,9 @@ function GovernanceContent() {
                 </p>
               </div>
               <div className="rounded-nested border border-hairline bg-canvas p-3.5 space-y-1">
-                <span className="text-ink font-bold">P_j, t, T+14 (Representative Fare)</span>
+                <span className="text-ink font-bold">P_j, t, T+15 (Representative Fare)</span>
                 <p className="text-mid-gray text-[11px] font-sans">
-                  Median basic economy fare across scheduled carriers on route j observed at search date t for departure at t+14 days.
+                  Median basic economy fare across scheduled carriers on route j observed at search date t for departure at t+15 days.
                 </p>
               </div>
             </div>

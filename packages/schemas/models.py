@@ -117,7 +117,7 @@ class FareObservation(Base):
 
     search_timestamp = Column(DateTime, nullable=False, index=True)
     travel_date = Column(Date, nullable=False, index=True)
-    advance_purchase_days = Column(Integer, nullable=False, index=True)  # 1, 7, 14, 30, 45
+    advance_purchase_days = Column(Integer, nullable=False, index=True)  # 1, 7, 15, 30, 45
 
     flight_number = Column(String(20), nullable=False)
     cabin_class = Column(String(20), default="ECONOMY")  # ECONOMY, PREMIUM_ECONOMY, BUSINESS
@@ -212,16 +212,16 @@ class CollectionJob(Base):
 
 
 class IndexValue(Base):
-    """Calculated airfare price index values (headline T+14, lead-time sub-indices, route indices)."""
+    """Calculated airfare price index values (headline T+15, lead-time sub-indices, route indices)."""
 
     __tablename__ = "index_values"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     index_series = Column(String(30), default="BASE_FARE", nullable=False)  # BASE_FARE, TOTAL_PRICE
     index_type = Column(
-        String(30), default="HEADLINE_T14", nullable=False
-    )  # HEADLINE_T14, SUB_T1, SUB_T7, SUB_T14, SUB_T30, SUB_T45, ROUTE_LEVEL
-    lead_time_days = Column(Integer, default=14, nullable=False)
+        String(30), default="HEADLINE_T15", nullable=False
+    )  # HEADLINE_T15, SUB_T1, SUB_T7, SUB_T15, SUB_T30, SUB_T45, ROUTE_LEVEL
+    lead_time_days = Column(Integer, default=15, nullable=False)
 
     period_start = Column(Date, nullable=False, index=True)
     period_end = Column(Date, nullable=False)
@@ -270,7 +270,7 @@ class ValidationResult(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     period_start = Column(Date, nullable=False)
     period_end = Column(Date, nullable=False)
-    series_evaluated = Column(String(50), default="HEADLINE_T14_BASE_FARE")
+    series_evaluated = Column(String(50), default="HEADLINE_T15_BASE_FARE")
     correlation = Column(Float, nullable=False)  # Pearson r
     mae = Column(Float, nullable=False)  # Mean Absolute Error
     rmse = Column(Float, nullable=False)  # Root Mean Squared Error
@@ -347,7 +347,7 @@ class MethodologyVersion(Base):
     version = Column(String(50), unique=True, nullable=False)  # APIX-2.0
     name = Column(String(100), nullable=False)
     base_period = Column(String(50), default="2026-08-01")
-    anchor_lead_time = Column(String(20), default="T+14")
+    anchor_lead_time = Column(String(20), default="T+15")
     price_estimator = Column(String(50), default="LOWEST_ECONOMY_CARRIER_MEDIAN")
     missing_data_method = Column(String(50), default="EXCLUDE_SOLD_OUT_RECORD_COVERAGE")
     outlier_method = Column(String(50), default="ROBUST_MEDIAN_FILTER")
@@ -366,7 +366,7 @@ class CarrierIndex(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     carrier_code = Column(String(10), nullable=False, index=True)  # '6E', 'AI', 'SG', 'QP'
     period_date = Column(Date, nullable=False, index=True)
-    horizon_days = Column(Integer, nullable=False, default=14)  # T+14 anchor
+    horizon_days = Column(Integer, nullable=False, default=15)  # T+15 anchor
     carrier_index_value = Column(Float, nullable=False)
     base_period_date = Column(Date, nullable=False)
     daily_change_pct = Column(Float, nullable=True)

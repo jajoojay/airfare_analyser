@@ -11,7 +11,7 @@
 - **Screen:** National Overview (`http://localhost:3000/`)
 
 ### 0:45 – 1:30 | The Confounding Defense (Lowest-Economy Estimator)
-- **Narrative:** "Notice our Hero Metric: the **Headline Index is anchored strictly at T+14** (two weeks out). We never average T+1 and T+45 prices together. Crucially, we defend against fare-mix confounding: if airlines release hundreds of expensive Flexi Economy seats with free cancellations, naive averages spike by +20%, falsely signaling inflation. Our estimator extracts strictly the lowest available basic economy fare per carrier before computing cross-carrier medians. Ticket-mix shifts have **zero mathematical impact** on our index."
+- **Narrative:** "Notice our Hero Metric: the **Headline Index is anchored strictly at T+15** (two weeks out). We never average T+1 and T+45 prices together. Crucially, we defend against fare-mix confounding: if airlines release hundreds of expensive Flexi Economy seats with free cancellations, naive averages spike by +20%, falsely signaling inflation. Our estimator extracts strictly the lowest available basic economy fare per carrier before computing cross-carrier medians. Ticket-mix shifts have **zero mathematical impact** on our index."
 - **Screen:** Route Detail (`http://localhost:3000/routes/DEL-BOM`) — point out the 5-component fare decomposition and lowest-economy defense.
 
 ### 1:30 – 2:30 | Route Basket & DGCA Normalization
@@ -19,7 +19,7 @@
 - **Screen:** Route Matrix (`http://localhost:3000/routes`)
 
 ### 2:30 – 3:30 | The "WOW" Lead-Time Elasticity Curve
-- **Narrative:** "Here is our signature feature: **Lead-Time Elasticity**. By tracking unpooled booking horizons across $T+45, T+30, T+14, T+7$, and $T+1$, we reveal how carrier yield management escalates prices. As you can see, the **Dynamic Surge Multiplier reaches 2.45x** between 45 days and 24 hours before takeoff. Economists and policymakers can now monitor dynamic pricing pressure in real time."
+- **Narrative:** "Here is our signature feature: **Lead-Time Elasticity**. By tracking unpooled booking horizons across $T+45, T+30, T+15, T+7$, and $T+1$, we reveal how carrier yield management escalates prices. As you can see, the **Dynamic Surge Multiplier reaches 2.45x** between 45 days and 24 hours before takeoff. Economists and policymakers can now monitor dynamic pricing pressure in real time."
 - **Screen:** Lead-Time WOW (`http://localhost:3000/lead-time`)
 
 ### 3:30 – 4:30 | MoSPI Benchmark Directional Co-Movement

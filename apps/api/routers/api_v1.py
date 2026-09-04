@@ -1,47 +1,131 @@
 """REST API Router v1 for the India Airfare Price Observatory (Official MoSPI Specifications)."""
 
-from typing import Optional
+import datetime
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Path, Query
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from database.session import get_db
 from packages.schemas.models import (
     Airline,
+    CollectionJob,
     DiscrepancyAudit,
     FareObservation,
     IndexValue,
     MethodologyVersion,
     Route,
+    Source,
 )
 from packages.statistics.carrier_inflation import CarrierInflationService
 from packages.statistics.volatility import VolatilityService
 from packages.statistics.weights import DGCAWeightEngine
 from services.collectors.health_service import CollectorHealthService
 
-router = APIRouter(prefix="/api/v1", tags=["Observatory Core API"])
+router = APIRouter(prefix="/api/v1")
+
+
+# =====================================================================
+# Pydantic Schemas for Swagger / OpenAPI Documentation
+# =====================================================================
+
+class DailyIndexItem(BaseModel):
+    date: str = Field(..., description="Observation date (ISO-8601)", example="2026-09-04")
+    index_value: float = Field(..., description="APIX-2.0 Laspeyres Price Index (Base 2026-08-01 = 100.00)", example=110.36)
+    daily_change_pct: Optional[float] = Field(None, description="24-hour rate of change (%)", example=0.25)
+    coverage_rate: float = Field(..., description="Sample coverage percentage", example=100.0)
+    is_low_coverage: bool = Field(False, description="Flag indicating if sample falls below 80% statutory threshold")
+
+
+class FareDecompositionItem(BaseModel):
+    base_fare: float = Field(..., description="Base airline tariff component (INR)", example=3850.0)
+    fuel_surcharge: float = Field(..., description="Fuel surcharge component (INR)", example=850.0)
+    gst_taxes: float = Field(..., description="Statutory 5% GST tax (INR)", example=235.0)
+    udf_adf: float = Field(..., description="Airport User / Development Fee (INR)", example=350.0)
+    convenience_fee: float = Field(..., description="Booking fee (INR)", example=0.0)
+    total_consumer_fare: float = Field(..., description="Total walkaway passenger fare (INR)", example=5285.0)
+
+
+class CarrierBreakdownItem(BaseModel):
+    carrier: str = Field(..., description="IATA 2-letter airline code (6E, AI, SG, QP, IX)", example="6E")
+    name: str = Field(..., description="Operating domestic carrier name", example="IndiGo")
+    basic_fare: float = Field(..., description="Minimum published economy fare (INR)", example=4850.0)
+    flexi_fare: float = Field(..., description="Flexi/Comfort bundle fare (INR)", example=6200.0)
+    is_min: bool = Field(..., description="Whether carrier offers the cheapest corridor quote", example=True)
+    flights: int = Field(..., description="Number of monitored departures", example=14)
+
+
+class CorridorDetailResponse(BaseModel):
+    route_code: str = Field(..., description="City-pair corridor code (e.g. DEL-BOM)", example="DEL-BOM")
+    origin: str = Field(..., description="Origin city name", example="Delhi")
+    destination: str = Field(..., description="Destination city name", example="Mumbai")
+    corridor_type: str = Field(..., description="DGCA classification (METRO_TRUNK or REGIONAL_THIN)", example="METRO_TRUNK")
+    weight_pct: float = Field(..., description="DGCA passenger traffic weight (%)", example=18.5)
+    representative_price: Optional[float] = Field(None, description="Median basic fare across carriers (INR)", example=4850.0)
+    fare_decomposition: Optional[FareDecompositionItem] = None
+    carrier_breakdown: List[CarrierBreakdownItem] = []
+
+
+class CorridorSummaryItem(BaseModel):
+    id: int = Field(..., description="Corridor database identifier", example=1)
+    route_code: str = Field(..., description="City-pair corridor code", example="DEL-BOM")
+    origin: str = Field(..., description="Origin city", example="Delhi")
+    destination: str = Field(..., description="Destination city", example="Mumbai")
+    origin_airport: str = Field(..., description="Origin airport IATA code", example="DEL")
+    destination_airport: str = Field(..., description="Destination airport IATA code", example="BOM")
+    corridor_type: str = Field(..., description="DGCA classification", example="METRO_TRUNK")
+    dgca_weight: float = Field(..., description="Normalized basket weight", example=0.185)
+    current_index: Optional[float] = Field(None, description="Current corridor index (Base = 100.00)", example=112.45)
+    daily_change_pct: Optional[float] = Field(None, description="24-hour change (%)", example=0.35)
+    weekly_change_pct: Optional[float] = Field(None, description="7-day change (%)", example=1.85)
+    monthly_change_pct: Optional[float] = Field(None, description="30-day change (%)", example=8.40)
+
+
+class LiveQuoteItem(BaseModel):
+    id: int = Field(..., description="Unique observation ID", example=15281)
+    route_code: str = Field(..., description="Corridor code", example="DEL-BOM")
+    carrier_code: str = Field(..., description="Airline IATA code", example="6E")
+    carrier_name: str = Field(..., description="Airline name", example="IndiGo")
+    flight_number: str = Field(..., description="Operating flight number", example="6E-205")
+    advance_purchase_days: int = Field(..., description="Advance booking horizon (days)", example=14)
+    travel_date: str = Field(..., description="Scheduled departure date", example="2026-09-18")
+    observed_at: str = Field(..., description="Exact capture timestamp in ISO format", example="2026-09-04T21:30:00Z")
+    source_name: str = Field(..., description="Provenance feed title", example="Google Flights RPC Validator & Fallback")
+    feed_type: str = Field(..., description="Ingestion feed type", example="CARRIER_DIRECT")
+    base_fare: float = Field(..., description="Base tariff (INR)", example=3850.0)
+    fuel_surcharge: float = Field(..., description="Fuel surcharge (INR)", example=850.0)
+    tax_amount: float = Field(..., description="Statutory 5% GST (INR)", example=235.0)
+    development_fee: float = Field(..., description="UDF/ADF fee (INR)", example=350.0)
+    convenience_fee: float = Field(..., description="Booking fee (INR)", example=0.0)
+    total_fare: float = Field(..., description="Total consumer fare (INR)", example=5285.0)
+    is_synthetic: bool = Field(False, description="Whether data point is synthetic", example=False)
+
 
 
 @router.get("/index")
 def get_current_index(
     series: str = Query("BASE_FARE", pattern="^(BASE_FARE|TOTAL_PRICE)$"),
-    horizon: str = Query("t14", pattern="^(t1|t7|t14|t30|t45)$"),
+    horizon: str = Query("t15", pattern="^(t1|t7|t14|t15|t30|t45)$"),
     db: Session = Depends(get_db),
 ):
     """Retrieves current headline index value and deltas."""
     h_int = int(horizon.replace("t", ""))
-    itype = "HEADLINE_T14" if h_int == 14 else f"SUB_T{h_int}"
+    itype = "HEADLINE_T15" if h_int in (14, 15) else f"SUB_T{h_int}"
 
-    latest = (
+    query = (
         db.query(IndexValue)
         .filter(
             IndexValue.index_series == series,
-            IndexValue.index_type == itype,
             IndexValue.route_id.is_(None),
         )
-        .order_by(IndexValue.period_start.desc())
-        .first()
     )
+    if h_int in (14, 15):
+        query = query.filter(IndexValue.index_type.in_(["HEADLINE_T15", "HEADLINE_T14"]))
+    else:
+        query = query.filter(IndexValue.index_type == itype)
+
+    latest = query.order_by(IndexValue.period_start.desc()).first()
 
     if not latest:
         # Check if there is ANY headline index calculated in DB
@@ -74,21 +158,20 @@ def get_current_index(
 @router.get("/index/timeseries")
 def get_index_timeseries(
     series: str = Query("BASE_FARE", pattern="^(BASE_FARE|TOTAL_PRICE)$"),
-    horizon: int = Query(14),
+    horizon: int = Query(15),
     db: Session = Depends(get_db),
 ):
     """Returns historical daily time-series of index values."""
-    itype = "HEADLINE_T14" if horizon == 14 else f"SUB_T{horizon}"
-    records = (
-        db.query(IndexValue)
-        .filter(
-            IndexValue.index_series == series,
-            IndexValue.index_type == itype,
-            IndexValue.route_id.is_(None),
-        )
-        .order_by(IndexValue.period_start.asc())
-        .all()
+    query = db.query(IndexValue).filter(
+        IndexValue.index_series == series,
+        IndexValue.route_id.is_(None),
     )
+    if horizon in (14, 15):
+        query = query.filter(IndexValue.index_type.in_(["HEADLINE_T15", "HEADLINE_T14"]))
+    else:
+        query = query.filter(IndexValue.index_type == f"SUB_T{horizon}")
+
+    records = query.order_by(IndexValue.period_start.asc()).all()
 
     return [
         {
@@ -101,23 +184,29 @@ def get_index_timeseries(
     ]
 
 
-@router.get("/index/daily")
+@router.get(
+    "/index/daily",
+    response_model=List[DailyIndexItem],
+    tags=["Public National Indices"],
+    summary="Daily Airfare Price Index Time-Series (APIX-2.0)",
+    description="Returns the official daily Laspeyres Headline Index (T+15) or advance purchase Sub-Indices (T+1, T+7, T+15, T+30, T+45) with day-on-day percentage change and statistical sample coverage rates.",
+)
 def get_daily_indices(
-    from_date: Optional[str] = Query(None, alias="from"),
-    to_date: Optional[str] = Query(None, alias="to"),
-    series: str = Query("BASE_FARE", pattern="^(BASE_FARE|TOTAL_PRICE)$"),
-    horizon: int = Query(14),
+    from_date: Optional[str] = Query(None, alias="from", description="Start date filter (YYYY-MM-DD)", examples=["2026-08-01"]),
+    to_date: Optional[str] = Query(None, alias="to", description="End date filter (YYYY-MM-DD)", examples=["2026-09-04"]),
+    series: str = Query("BASE_FARE", pattern="^(BASE_FARE|TOTAL_PRICE)$", description="Target price series (BASE_FARE or TOTAL_PRICE)", examples=["BASE_FARE"]),
+    horizon: int = Query(15, description="Advance purchase booking horizon in days (1, 7, 15, 30, 45)", examples=[15]),
     db: Session = Depends(get_db),
 ):
     """Returns filtered daily index time-series between from_date and to_date."""
-    import datetime
-
-    itype = "HEADLINE_T14" if horizon == 14 else f"SUB_T{horizon}"
     query = db.query(IndexValue).filter(
         IndexValue.index_series == series,
-        IndexValue.index_type == itype,
         IndexValue.route_id.is_(None),
     )
+    if horizon in (14, 15):
+        query = query.filter(IndexValue.index_type.in_(["HEADLINE_T15", "HEADLINE_T14"]))
+    else:
+        query = query.filter(IndexValue.index_type == f"SUB_T{horizon}")
     if from_date:
         query = query.filter(IndexValue.period_start >= datetime.date.fromisoformat(from_date))
     if to_date:
@@ -148,7 +237,7 @@ def get_monthly_aggregated_indices(
         db.query(IndexValue)
         .filter(
             IndexValue.index_series == series,
-            IndexValue.index_type == "HEADLINE_T14",
+            IndexValue.index_type.in_(["HEADLINE_T15", "HEADLINE_T14"]),
             IndexValue.route_id.is_(None),
         )
         .order_by(IndexValue.period_start.asc())
@@ -194,7 +283,14 @@ def get_basket_weights(db: Session = Depends(get_db)):
     ]
 
 
-@router.get("/routes")
+@router.get(
+    "/corridors",
+    response_model=List[CorridorSummaryItem],
+    tags=["Corridor Intelligence"],
+    summary="List Monitored Domestic Corridors",
+    description="Returns all 10 monitored domestic corridors (8 trunk metro + 2 regional thin) with route codes, origin/destination airports, DGCA passenger weights, and latest Laspeyres index values.",
+)
+@router.get("/routes", tags=["Corridor Intelligence"], include_in_schema=False)
 def list_routes_summary(db: Session = Depends(get_db)):
     """Returns all 10 monitored corridors with corridor types, weights, and latest index values."""
     routes = db.query(Route).filter(Route.active).all()
@@ -233,12 +329,31 @@ def list_routes_summary(db: Session = Depends(get_db)):
     return results
 
 
-@router.get("/routes/{route_code}")
-def get_route_detail(route_code: str, db: Session = Depends(get_db)):
+@router.get(
+    "/corridors/{pair}",
+    response_model=CorridorDetailResponse,
+    tags=["Corridor Intelligence"],
+    summary="Corridor Intelligence & Fare Breakdown",
+    description="Returns comprehensive econometric intelligence for a specific domestic city-pair (e.g. DEL-BOM). Includes DGCA passenger basket weight, current route index, 5-part statutory fare decomposition, and active carrier price distribution.",
+)
+def get_corridor_by_pair(
+    pair: str = Path(..., description="City-pair corridor code (e.g. DEL-BOM)", examples=["DEL-BOM"]),
+    db: Session = Depends(get_db),
+):
     """Returns detailed corridor breakdown dynamically computed from authentic database observations."""
-    route = db.query(Route).filter(Route.route_code == route_code.upper()).first()
+    return get_route_detail(route_code=pair, db=db)
+
+
+@router.get("/routes/{route_code}", tags=["Corridor Intelligence"], include_in_schema=False)
+def get_route_detail(
+    route_code: str,
+    db: Session = Depends(get_db),
+):
+    """Returns detailed corridor breakdown dynamically computed from authentic database observations."""
+    code = route_code.upper()
+    route = db.query(Route).filter(Route.route_code == code).first()
     if not route:
-        raise HTTPException(status_code=404, detail=f"Route {route_code} not found")
+        raise HTTPException(status_code=404, detail=f"Corridor {code} not found")
 
     weights = DGCAWeightEngine.get_active_weights(db)
     airlines = {a.id: a for a in db.query(Airline).all()}
@@ -256,22 +371,22 @@ def get_route_detail(route_code: str, db: Session = Depends(get_db)):
         carrier_map = {}
         for o in observations:
             al = airlines.get(o.airline_id)
-            code = al.code if al else "6E"
+            code_str = al.code if al else "6E"
             name = al.name if al else "Carrier"
-            if code not in carrier_map:
-                carrier_map[code] = {
-                    "carrier": code,
+            if code_str not in carrier_map:
+                carrier_map[code_str] = {
+                    "carrier": code_str,
                     "name": name,
                     "quotes": [],
                     "flight_count": 0,
                 }
-            carrier_map[code]["quotes"].append(o)
-            carrier_map[code]["flight_count"] += 1
+            carrier_map[code_str]["quotes"].append(o)
+            carrier_map[code_str]["flight_count"] += 1
 
         carrier_quotes = []
         min_overall_fare = min(o.base_fare for o in observations)
 
-        for code, data in carrier_map.items():
+        for code_str, data in carrier_map.items():
             base_fares = [q.base_fare for q in data["quotes"]]
             basic_min = min(base_fares) if base_fares else 4200.0
             flexi_candidates = [q.total_fare for q in data["quotes"] if q.fare_family != "BASIC"]
@@ -279,7 +394,7 @@ def get_route_detail(route_code: str, db: Session = Depends(get_db)):
 
             carrier_quotes.append(
                 {
-                    "carrier": code,
+                    "carrier": code_str,
                     "name": data["name"],
                     "basic_fare": round(basic_min, 2),
                     "flexi_fare": round(flexi_fare, 2),
@@ -327,6 +442,102 @@ def get_route_detail(route_code: str, db: Session = Depends(get_db)):
     }
 
 
+@router.get(
+    "/quotes/live",
+    response_model=List[LiveQuoteItem],
+    tags=["Live Scraper Pipeline"],
+    summary="Recent Verified Airfare Quotes (Live Ingestion Feed)",
+    description="Retrieves the most recent verified flight quotes captured from direct carrier booking portals and Google Flights RPC validators with exact timestamps, source provenance, airline identity, and 5-component fee decomposition.",
+)
+def get_live_quotes(
+    corridor: Optional[str] = Query(None, description="Filter by corridor code (e.g. DEL-BOM)", examples=["DEL-BOM"]),
+    carrier: Optional[str] = Query(None, description="Filter by airline code (e.g. 6E, AI, SG, QP, IX)", examples=["6E"]),
+    horizon: Optional[int] = Query(None, description="Filter by advance purchase days (1, 7, 15, 30, 45)", examples=[15]),
+    limit: int = Query(50, ge=1, le=200, description="Maximum number of quotes to return", examples=[50]),
+    db: Session = Depends(get_db),
+):
+    """Returns recent verified quotes with live timestamps and source provenance."""
+    query = (
+        db.query(FareObservation, Route, Airline, Source)
+        .join(Route, FareObservation.route_id == Route.id)
+        .join(Airline, FareObservation.airline_id == Airline.id)
+        .join(Source, FareObservation.source_id == Source.id)
+    )
+    if corridor:
+        query = query.filter(Route.route_code == corridor.upper())
+    if carrier:
+        query = query.filter(Airline.code == carrier.upper())
+    if horizon:
+        query = query.filter(FareObservation.advance_purchase_days == horizon)
+
+    records = (
+        query.order_by(FareObservation.search_timestamp.desc(), FareObservation.id.desc())
+        .limit(limit)
+        .all()
+    )
+
+    return [
+        {
+            "id": obs.id,
+            "route_code": r.route_code,
+            "carrier_code": a.code,
+            "carrier_name": a.name,
+            "flight_number": obs.flight_number,
+            "advance_purchase_days": obs.advance_purchase_days,
+            "travel_date": obs.travel_date.isoformat(),
+            "observed_at": obs.search_timestamp.isoformat(),
+            "source_name": s.name,
+            "feed_type": obs.feed_type or "CARRIER_DIRECT",
+            "base_fare": obs.base_fare,
+            "fuel_surcharge": obs.fuel_surcharge,
+            "tax_amount": obs.tax_amount,
+            "development_fee": obs.development_fee,
+            "convenience_fee": obs.convenience_fee,
+            "total_fare": obs.total_fare,
+            "is_synthetic": obs.is_synthetic,
+        }
+        for obs, r, a, s in records
+    ]
+
+
+@router.post(
+    "/collection/run",
+    tags=["Live Scraper Pipeline"],
+    summary="Trigger Real-World Scraper Ingestion Cycle",
+    description="Triggers the production dual-feed collection engine across monitored corridors and horizons. Captures live quotes, reconciles discrepancies, persists authentic records to the database, and recalculates indices.",
+)
+def trigger_production_run(
+    background_tasks: BackgroundTasks,
+    corridors: Optional[str] = Query(None, description="Comma-separated corridor codes (e.g. DEL-BOM,DEL-BLR) or omit for all 10"),
+    horizons: Optional[str] = Query(None, description="Comma-separated horizons (e.g. 1,7,15,30,45) or omit for all 5"),
+    run_in_background: bool = Query(True, description="Execute asynchronously in background task"),
+    db: Session = Depends(get_db),
+):
+    corr_list = [c.strip().upper() for c in corridors.split(",")] if corridors else None
+    hor_list = [int(h.strip()) for h in horizons.split(",")] if horizons else None
+
+    from services.collectors.production_collector import run_production_collection
+
+    if run_in_background:
+        background_tasks.add_task(
+            run_production_collection,
+            corridors=corr_list,
+            horizons=hor_list,
+        )
+        return {
+            "status": "QUEUED",
+            "message": "Production scraper cycle started in background.",
+            "target_corridors": corr_list or "ALL_10",
+            "target_horizons": hor_list or [1, 7, 15, 30, 45],
+        }
+    else:
+        summary = run_production_collection(
+            corridors=corr_list,
+            horizons=hor_list,
+        )
+        return summary
+
+
 @router.get("/lead-time")
 def get_lead_time_analytics(route_code: str = Query("DEL-BOM"), db: Session = Depends(get_db)):
     """Calculates dynamic lead-time curve and surge multiplier dynamically from live observations."""
@@ -337,7 +548,7 @@ def get_lead_time_analytics(route_code: str = Query("DEL-BOM"), db: Session = De
     horizons = [
         (45, "T+45", "Early Bird"),
         (30, "T+30", "Advance Planning"),
-        (14, "T+14", "Headline Anchor"),
+        (15, "T+15", "Headline Anchor"),
         (7, "T+7", "Short Planning"),
         (1, "T+1", "Departure Eve"),
     ]
@@ -607,10 +818,10 @@ def get_methodology_spec(db: Session = Depends(get_db)):
 
     return {
         "version": "APIX-2.0",
-        "name": "India Airfare Price Observatory (Modified Laspeyres with Fare-Mix Protection & T+14 Anchor)",
+        "name": "India Airfare Price Observatory (Modified Laspeyres with Fare-Mix Protection & T+15 Anchor)",
         "base_period": "2026-08-01 = 100",
-        "anchor_window": "T+14 (Two-Week Advance Purchase)",
-        "formula": "I_t = 100 * sum(w_j * (P_{j,t,T+14} / P_{j,0,T+14}))",
+        "anchor_window": "T+15 (Two-Week Advance Purchase)",
+        "formula": "I_t = 100 * sum(w_j * (P_{j,t,T+15} / P_{j,0,T+15}))",
         "estimator": "Lowest available non-refundable Economy fare per scheduled carrier, median across carriers",
         "notes": version.notes if version else "APIX-2.0 production methodology.",
         "basket_weights": [
@@ -626,7 +837,7 @@ def get_methodology_spec(db: Session = Depends(get_db)):
 
 @router.get("/analytics/carrier-inflation")
 def get_carrier_inflation(
-    horizon: int = Query(14, description="Advance purchase horizon days (1, 7, 14, 30, 45)"),
+    horizon: int = Query(15, description="Advance purchase horizon days (1, 7, 15, 30, 45)"),
     db: Session = Depends(get_db),
 ):
     """Retrieves current carrier-specific price inflation indices and inter-airline price dispersion."""
@@ -635,7 +846,7 @@ def get_carrier_inflation(
 
 @router.get("/analytics/carrier-inflation/timeseries")
 def get_carrier_inflation_timeseries(
-    horizon: int = Query(14, description="Advance purchase horizon days (1, 7, 14, 30, 45)"),
+    horizon: int = Query(15, description="Advance purchase horizon days (1, 7, 15, 30, 45)"),
     limit: int = Query(30, ge=1, le=90),
     db: Session = Depends(get_db),
 ):
@@ -650,7 +861,7 @@ def get_carrier_inflation_timeseries(
 
 @router.get("/analytics/volatility")
 def get_network_volatility(
-    horizon: int = Query(14, description="Advance purchase horizon days (1, 7, 14, 30, 45)"),
+    horizon: int = Query(15, description="Advance purchase horizon days (1, 7, 15, 30, 45)"),
     db: Session = Depends(get_db),
 ):
     """Retrieves route-level price dispersion, intraday spreads, standard deviations, and surge alerts."""

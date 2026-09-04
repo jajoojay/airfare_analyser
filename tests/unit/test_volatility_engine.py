@@ -15,7 +15,7 @@ def test_corridor_volatility_calculation():
         vol = VolatilityService.calculate_corridor_volatility(
             db=db,
             route_id=route.id,
-            horizon_days=14,
+            horizon_days=15,
             save_to_db=False,
         )
 
@@ -39,7 +39,7 @@ def test_network_volatility_summary():
     """Verifies network-wide volatility scorecard across all monitored corridors."""
     db = SessionLocal()
     try:
-        summary = VolatilityService.get_network_volatility_summary(db, horizon_days=14)
+        summary = VolatilityService.get_network_volatility_summary(db, horizon_days=15)
         assert "monitored_corridors_count" in summary
         assert "average_network_spread_pct" in summary
         assert "active_surge_corridors_count" in summary

@@ -189,7 +189,7 @@ export function MarketBriefingBanner({
             <div className="space-y-2 border-l-2 border-hairline pl-3">
               <span className="font-semibold text-ink block text-xs">Monetary Policy & Inflation Tracking</span>
               <p>
-                Official CPI airfare collection via ticketing counters misses online volatility. The APIx index anchored at <span className="text-ink font-mono font-semibold">T+14</span> provides an unpooled, standardized benchmark that correlates tightly with official CPI (<span className="text-ink font-mono font-semibold">r = 0.997</span>) while delivering daily high-frequency visibility.
+                Official CPI airfare collection via ticketing counters misses online volatility. The APIx index anchored at <span className="text-ink font-mono font-semibold">T+15</span> provides an unpooled, standardized benchmark that correlates tightly with official CPI (<span className="text-ink font-mono font-semibold">r = 0.997</span>) while delivering daily high-frequency visibility.
               </p>
               <p>
                 Aviation Turbine Fuel (ATF) revisions from IOCL have decoupled from immediate passenger ticket quotes due to forward fuel hedging, confirming airline pricing is currently capacity-driven.

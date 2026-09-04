@@ -35,8 +35,8 @@ export default function NationalOverviewPage() {
   // Dynamic State
   const [headline, setHeadline] = useState<IndexResponse>({
     index_series: "BASE_FARE",
-    index_type: "HEADLINE_T14",
-    lead_time_days: 14,
+    index_type: "HEADLINE_T15",
+    lead_time_days: 15,
     index_value: 108.42,
     daily_change_pct: 1.72,
     weekly_change_pct: 3.81,
@@ -58,7 +58,7 @@ export default function NationalOverviewPage() {
   const [ribbonMap, setRibbonMap] = useState<Record<string, { val: string; change: string }>>({
     "T+1": { val: "135.20", change: "+35.2%" },
     "T+7": { val: "118.40", change: "+18.4%" },
-    "T+14": { val: "108.42", change: "+8.4%" },
+    "T+15": { val: "108.42", change: "+8.4%" },
     "T+30": { val: "97.50", change: "-2.5%" },
     "T+45": { val: "94.20", change: "-5.8%" },
   });
@@ -74,13 +74,13 @@ export default function NationalOverviewPage() {
         setLoading(true);
         // 1. Fetch Headline Index
         const hData = await fetchFromApi<IndexResponse>(
-          `/index?series=${priceSeries}&horizon=t14`,
+          `/index?series=${priceSeries}&horizon=t15`,
           headline
         );
 
         // 2. Fetch Timeseries
         const tsData = await fetchFromApi<TimeseriesPoint[]>(
-          `/index/timeseries?series=${priceSeries}&horizon=14`,
+          `/index/timeseries?series=${priceSeries}&horizon=15`,
           [
             { date: "2026-08-01", index_value: 100.0, daily_change_pct: 0.0, coverage_rate: 94.6 },
             { date: "2026-08-08", index_value: 102.1, daily_change_pct: 0.4, coverage_rate: 94.6 },
@@ -91,10 +91,10 @@ export default function NationalOverviewPage() {
         );
 
         // 3. Fetch Ribbon Horizons
-        const [t1, t7, t14, t30, t45] = await Promise.all([
+        const [t1, t7, t15, t30, t45] = await Promise.all([
           fetchFromApi<IndexResponse>(`/index?series=${priceSeries}&horizon=t1`, { index_value: 135.2, daily_change_pct: 35.2 } as any),
           fetchFromApi<IndexResponse>(`/index?series=${priceSeries}&horizon=t7`, { index_value: 118.4, daily_change_pct: 18.4 } as any),
-          fetchFromApi<IndexResponse>(`/index?series=${priceSeries}&horizon=t14`, { index_value: hData.index_value || 108.42, daily_change_pct: hData.daily_change_pct || 1.72 } as any),
+          fetchFromApi<IndexResponse>(`/index?series=${priceSeries}&horizon=t15`, { index_value: hData.index_value || 108.42, daily_change_pct: hData.daily_change_pct || 1.72 } as any),
           fetchFromApi<IndexResponse>(`/index?series=${priceSeries}&horizon=t30`, { index_value: 97.5, daily_change_pct: -2.5 } as any),
           fetchFromApi<IndexResponse>(`/index?series=${priceSeries}&horizon=t45`, { index_value: 94.2, daily_change_pct: -5.8 } as any),
         ]);
@@ -131,7 +131,7 @@ export default function NationalOverviewPage() {
           setRibbonMap({
             "T+1": { val: t1.index_value.toFixed(2), change: "+35.2%" },
             "T+7": { val: t7.index_value.toFixed(2), change: "+18.4%" },
-            "T+14": { val: t14.index_value.toFixed(2), change: `+${(t14.index_value - 100).toFixed(1)}%` },
+            "T+15": { val: t15.index_value.toFixed(2), change: `+${(t15.index_value - 100).toFixed(1)}%` },
             "T+30": { val: t30.index_value.toFixed(2), change: "-2.5%" },
             "T+45": { val: t45.index_value.toFixed(2), change: "-5.8%" },
           });
@@ -178,7 +178,7 @@ export default function NationalOverviewPage() {
       desc: "Short-horizon travel entering carrier dynamic revenue escalation."
     },
     { 
-      horizon: "T+14", 
+      horizon: "T+15", 
       title: "2 Weeks Out (Official Anchor)", 
       val: currentVal.toFixed(2), 
       change: `+${vsBasePct}%`, 
@@ -299,10 +299,10 @@ export default function NationalOverviewPage() {
                   HEADLINE APIx BENCHMARK
                 </span>
                 <Tooltip
-                  label="T+14 Anchor"
-                  tooltip="The headline index is strictly anchored at the 14-day advance booking horizon to eliminate passenger lead-time mix distortion."
+                  label="T+15 Anchor"
+                  tooltip="The headline index is strictly anchored at the 15-day advance booking horizon to eliminate passenger lead-time mix distortion."
                 >
-                  <Badge variant="solid" size="xs">T+14 MACRO ANCHOR</Badge>
+                  <Badge variant="solid" size="xs">T+15 MACRO ANCHOR</Badge>
                 </Tooltip>
               </div>
 
@@ -370,7 +370,7 @@ export default function NationalOverviewPage() {
             <div className="flex items-center gap-2 text-ink">
               <Shield className="h-5 w-5 text-ink" />
               <h3 className="font-semibold text-sm text-ink font-sans">
-                Why the T+14 Anchor & DGCA Weights?
+                Why the T+15 Anchor & DGCA Weights?
               </h3>
             </div>
             
@@ -495,7 +495,7 @@ export default function NationalOverviewPage() {
         <StatCard
           title="Model Formulation"
           value="APIX-2.0"
-          subtitle="T+14 Anchor · DGCA_2026_V1"
+          subtitle="T+15 Anchor · DGCA_2026_V1"
           accent="default"
           icon={Sparkles}
         />

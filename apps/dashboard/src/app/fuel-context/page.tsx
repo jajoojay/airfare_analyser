@@ -134,7 +134,7 @@ export default function FuelContextPage() {
               ATF Spot Price Revisions vs National Airfare Series
             </h2>
             <p className="text-xs text-mid-gray">
-              Tracking normalized weekly movements of jet fuel against the T+14 headline price index.
+              Tracking normalized weekly movements of jet fuel against the T+15 headline price index.
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs font-mono">
@@ -162,7 +162,7 @@ export default function FuelContextPage() {
             },
             {
               key: "fareIndex",
-              name: "Airfare T+14 Index",
+              name: "Airfare T+15 Index",
               color: "#0a0a0a",
               strokeWidth: 2.5,
             },
@@ -184,7 +184,7 @@ export default function FuelContextPage() {
                 <th className="px-6 py-3.5 font-semibold">Date</th>
                 <th className="px-6 py-3.5 font-semibold">ATF Price (₹ / kL)</th>
                 <th className="px-6 py-3.5 font-semibold">ATF Rebased Index</th>
-                <th className="px-6 py-3.5 font-semibold">Airfare T+14 Index</th>
+                <th className="px-6 py-3.5 font-semibold">Airfare T+15 Index</th>
                 <th className="px-6 py-3.5 font-semibold text-right">Relationship Classification</th>
               </tr>
             </thead>

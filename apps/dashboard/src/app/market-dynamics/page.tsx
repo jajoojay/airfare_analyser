@@ -61,7 +61,7 @@ function MarketDynamicsContent() {
   // -------------------------------------------------------------
   // TAB 1: CARRIER-WISE INFLATION STATE
   // -------------------------------------------------------------
-  const [carrierHorizon, setCarrierHorizon] = useState<number>(14);
+  const [carrierHorizon, setCarrierHorizon] = useState<number>(15);
   const [inflationData, setInflationData] = useState<CarrierInflationResponse | null>(null);
   const [carrierTimeseries, setCarrierTimeseries] = useState<CarrierTimeseriesPoint[]>([]);
   const [carrierCorridors, setCarrierCorridors] = useState<CorridorItem[]>([]);
@@ -108,7 +108,7 @@ function MarketDynamicsContent() {
     lead_time_curve: [
       { advance_days: 45, horizon: "T+45", price: 3000, label: "Early Bird" },
       { advance_days: 30, horizon: "T+30", price: 3240, label: "Advance Planning" },
-      { advance_days: 14, horizon: "T+14", price: 3750, label: "Headline Anchor" },
+      { advance_days: 15, horizon: "T+15", price: 3750, label: "Headline Anchor" },
       { advance_days: 7, horizon: "T+7", price: 4800, label: "Short Planning" },
       { advance_days: 1, horizon: "T+1", price: 6120, label: "Departure Eve" },
     ],
@@ -146,7 +146,7 @@ function MarketDynamicsContent() {
   // -------------------------------------------------------------
   // TAB 3: VOLATILITY RADAR STATE
   // -------------------------------------------------------------
-  const [volatilityHorizon, setVolatilityHorizon] = useState<number>(14);
+  const [volatilityHorizon, setVolatilityHorizon] = useState<number>(15);
   const [volatilityData, setVolatilityData] = useState<VolatilityResponse | null>(null);
   const [selectedVolRoute, setSelectedVolRoute] = useState<string>("DEL-BOM");
   const [volRouteQuotes, setVolRouteQuotes] = useState<RouteTrajectoryResponse | null>(null);
@@ -203,7 +203,7 @@ function MarketDynamicsContent() {
   // TAB 5: INTER-OTA DISPERSION STATE
   // -------------------------------------------------------------
   const [otaRoute, setOtaRoute] = useState<string>("DEL-BOM");
-  const [otaHorizon, setOtaHorizon] = useState<number>(14);
+  const [otaHorizon, setOtaHorizon] = useState<number>(15);
   const [otaDispersion, setOtaDispersion] = useState<OTADispersionRankingResponse | null>(null);
   const [sourcesStatus, setSourcesStatus] = useState<any>(null);
   const [otaLoading, setOtaLoading] = useState<boolean>(false);
@@ -313,7 +313,7 @@ function MarketDynamicsContent() {
 
             <div className="flex items-center gap-1 rounded-[18px] border border-hairline bg-canvas p-1 self-start sm:self-auto">
               <span className="text-[11px] font-mono text-mid-gray px-2">Booking Horizon:</span>
-              {([1, 7, 14, 30, 45] as const).map((h) => (
+              {([1, 7, 15, 30, 45] as const).map((h) => (
                 <button
                   key={h}
                   onClick={() => setCarrierHorizon(h)}
@@ -461,8 +461,8 @@ function MarketDynamicsContent() {
               badgeVariant="warning"
             />
             <StatCard
-              title="T+14 Macro Anchor Fare"
-              value={`₹${(leadTimeData.lead_time_curve.find((c) => c.horizon === "T+14")?.price || 3750).toLocaleString()}`}
+              title="T+15 Macro Anchor Fare"
+              value={`₹${(leadTimeData.lead_time_curve.find((c) => c.horizon === "T+15")?.price || 3750).toLocaleString()}`}
               subtitle="Insulated official index baseline"
               icon={ShieldAlert}
               badge="Official Standard"
@@ -491,7 +491,7 @@ function MarketDynamicsContent() {
             {leadTimeData.lead_time_curve.map((item) => {
               const baseP = leadTimeData.lead_time_curve[0]?.price || 3000;
               const mult = item.price && baseP > 0 ? (item.price / baseP).toFixed(2) : "1.00";
-              const isAnchor = item.horizon === "T+14";
+              const isAnchor = item.horizon === "T+15";
               const isSafe = item.horizon === "T+45" || item.horizon === "T+30";
               const isWarning = item.horizon === "T+7";
 
@@ -580,7 +580,7 @@ function MarketDynamicsContent() {
 
             <div className="flex items-center gap-1 rounded-[18px] border border-hairline bg-canvas p-1 self-start sm:self-auto">
               <span className="text-[11px] font-mono text-mid-gray px-2">Horizon:</span>
-              {([1, 7, 14, 30, 45] as const).map((h) => (
+              {([1, 7, 15, 30, 45] as const).map((h) => (
                 <button
                   key={h}
                   onClick={() => setVolatilityHorizon(h)}
@@ -814,7 +814,7 @@ function MarketDynamicsContent() {
 
               {/* Horizon Selector */}
               <div className="flex items-center gap-1 bg-paper border border-hairline rounded-[18px] p-0.5">
-                {[1, 7, 14, 30, 45].map((h) => (
+                {[1, 7, 15, 30, 45].map((h) => (
                   <button
                     key={h}
                     onClick={() => setOtaHorizon(h)}

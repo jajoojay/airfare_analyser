@@ -21,12 +21,12 @@ class ObservatoryMatrixSerializer:
 
     @classmethod
     def get_headline_matrix(cls, db: Session) -> Dict[str, Any]:
-        """Matrix 1: National Laspeyres Headline Matrix (T+14 Anchor)."""
+        """Matrix 1: National Laspeyres Headline Matrix (T+15 Anchor)."""
         latest = (
             db.query(IndexValue)
             .filter(
                 IndexValue.index_series == "BASE_FARE",
-                IndexValue.index_type == "HEADLINE_T14",
+                IndexValue.index_type.in_(["HEADLINE_T15", "HEADLINE_T14"]),
                 IndexValue.route_id.is_(None),
             )
             .order_by(IndexValue.period_start.desc())
@@ -38,7 +38,7 @@ class ObservatoryMatrixSerializer:
 
         if latest:
             return {
-                "name": "National Laspeyres Headline Index (T+14 Anchor)",
+                "name": "National Laspeyres Headline Index (T+15 Anchor)",
                 "base_period": "2026-08-01 = 100.0",
                 "current_index": round(latest.index_value, 2),
                 "daily_change_pct": latest.daily_change_pct or 0.0,
@@ -50,7 +50,7 @@ class ObservatoryMatrixSerializer:
             }
 
         return {
-            "name": "National Laspeyres Headline Index (T+14 Anchor)",
+            "name": "National Laspeyres Headline Index (T+15 Anchor)",
             "base_period": "2026-08-01 = 100.0",
             "current_index": 100.0,
             "daily_change_pct": 0.0,
@@ -62,7 +62,7 @@ class ObservatoryMatrixSerializer:
         }
 
     @classmethod
-    def get_carrier_inflation_matrix(cls, db: Session, horizon_days: int = 14) -> Dict[str, Any]:
+    def get_carrier_inflation_matrix(cls, db: Session, horizon_days: int = 15) -> Dict[str, Any]:
         """Matrix 2: Carrier-Wise Price Inflation Matrix (CPI-Carrier)."""
         summary = CarrierInflationService.get_latest_carrier_inflation(
             db, horizon_days=horizon_days
@@ -88,7 +88,7 @@ class ObservatoryMatrixSerializer:
         }
 
     @classmethod
-    def get_corridor_volatility_matrix(cls, db: Session, horizon_days: int = 14) -> Dict[str, Any]:
+    def get_corridor_volatility_matrix(cls, db: Session, horizon_days: int = 15) -> Dict[str, Any]:
         """Matrix 3: Corridor Volatility & Intraday Spreads Matrix."""
         summary = VolatilityService.get_network_volatility_summary(db, horizon_days=horizon_days)
         corridors = []
@@ -201,7 +201,7 @@ class ObservatoryMatrixSerializer:
 === 5 VERIFIED OBSERVATORY STATISTICAL MATRICES (GROUND TRUTH) ===
 
 [MATRIX 1: NATIONAL LASPEYRES HEADLINE]
-- Base Period: {h.get("base_period")} | Anchor: T+14 Days
+- Base Period: {h.get("base_period")} | Anchor: T+15 Days
 - Current Index Value: {h.get("current_index")} (1D: {h.get("daily_change_pct"):+.1f}%, 7D: {h.get("weekly_change_pct"):+.1f}%, 30D: {h.get("monthly_change_pct"):+.1f}%)
 - Coverage: {h.get("coverage_rate_pct")}% across all 10 monitored corridors
 

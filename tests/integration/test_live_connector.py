@@ -12,7 +12,7 @@ def test_live_flight_connector_query():
 
     today = datetime.date(2026, 9, 1)
 
-    for h in [1, 7, 14, 30, 45]:
+    for h in [1, 7, 15, 30, 45]:
         result = connector.fetch_route_horizon("DEL-BOM", search_date=today, advance_days=h)
         assert result["status"] == "OK"
         fares = result["fares"]

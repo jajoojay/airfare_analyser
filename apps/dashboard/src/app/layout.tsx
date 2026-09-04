@@ -32,7 +32,7 @@ export default function RootLayout({
               <span>MoSPI Airfare Index Framework</span>
             </div>
             <div className="text-mid-gray text-[11px]">
-              DGCA Passenger-Weighted Basket (2026_V1) · Anchor: T+14 Days · Baseline: 2026-08-01 = 100.00
+              DGCA Passenger-Weighted Basket (2026_V1) · Anchor: T+15 Days · Baseline: 2026-08-01 = 100.00
             </div>
           </div>
         </footer>

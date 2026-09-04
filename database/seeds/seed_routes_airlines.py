@@ -271,19 +271,19 @@ def seed_methodology(db: Session):
         db.add(
             MethodologyVersion(
                 version=version,
-                name="India Airfare Price Index (Modified Laspeyres with Fare-Mix Protection & T+14 Anchor)",
+                name="India Airfare Price Index (Modified Laspeyres with Fare-Mix Protection & T+15 Anchor)",
                 base_period="2026-08-01",
-                anchor_lead_time="T+14",
+                anchor_lead_time="T+15",
                 price_estimator="LOWEST_ECONOMY_CARRIER_MEDIAN",
                 missing_data_method="EXCLUDE_SOLD_OUT_RECORD_COVERAGE",
                 outlier_method="ROBUST_MEDIAN_FILTER",
                 weight_method="DGCA_BIDIRECTIONAL_PASSENGER_VOLUME",
-                formula="I_t = 100 * sum(w_j * (P_{j,t,T+14} / P_{j,0,T+14}))",
+                formula="I_t = 100 * sum(w_j * (P_{j,t,T+15} / P_{j,0,T+15}))",
                 effective_from=datetime.date(2026, 1, 1),
                 notes=(
                     "APIX-2.0 eliminates fare-mix distortion by taking the minimum available non-refundable "
                     "economy fare per scheduled carrier before cross-carrier median estimation. "
-                    "The headline national index is anchored at T+14, while T+1, T+7, T+14, T+30, T+45 "
+                    "The headline national index is anchored at T+15, while T+1, T+7, T+15, T+30, T+45 "
                     "are computed as unpooled sub-indices. Both Base Fare and Total Price series are supported. "
                     "Route weights reflect DGCA boarded passenger volumes across 8 metro trunks and 2 regional corridors."
                 ),

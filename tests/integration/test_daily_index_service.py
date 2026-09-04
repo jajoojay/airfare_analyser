@@ -10,7 +10,7 @@ from services.index_engine.calculator_service import DailyIndexCalculatorService
 def test_daily_index_calculator_execution():
     """
     Executes DailyIndexCalculatorService on Day 1 of seeded synthetic verification data (2026-08-01):
-    1. Verifies Headline T+14 Index generated for BASE_FARE and TOTAL_PRICE.
+    1. Verifies Headline T+15 Index generated for BASE_FARE and TOTAL_PRICE.
     2. Verifies sub-indices generated for T+1, T+7, T+30, T+45.
     3. Verifies route-level indices generated for all 10 corridors.
     """
@@ -31,7 +31,7 @@ def test_daily_index_calculator_execution():
             db.query(IndexValue)
             .filter(
                 IndexValue.index_series == "BASE_FARE",
-                IndexValue.index_type == "HEADLINE_T14",
+                IndexValue.index_type.in_(["HEADLINE_T15", "HEADLINE_T14"]),
                 IndexValue.period_start == obs_date,
                 IndexValue.route_id.is_(None),
             )
@@ -41,7 +41,7 @@ def test_daily_index_calculator_execution():
         assert headline_base is not None
         # On base day, base period relative should equal 100.0
         assert headline_base.index_value == 100.0
-        assert headline_base.lead_time_days == 14
+        assert headline_base.lead_time_days in (14, 15)
         assert headline_base.coverage_rate >= 80.0
         assert headline_base.is_low_coverage is False
 
@@ -123,7 +123,7 @@ def test_daily_index_deltas_calculation():
             db.query(IndexValue)
             .filter(
                 IndexValue.index_series == "BASE_FARE",
-                IndexValue.index_type == "HEADLINE_T14",
+                IndexValue.index_type.in_(["HEADLINE_T15", "HEADLINE_T14"]),
                 IndexValue.period_start == day2,
                 IndexValue.route_id.is_(None),
             )

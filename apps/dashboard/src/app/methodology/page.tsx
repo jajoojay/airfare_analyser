@@ -65,7 +65,7 @@ export default function MethodologyPage() {
         {/* Formula Display Box */}
         <div className="rounded-nested border border-hairline bg-surface-alt p-6 font-mono text-center space-y-3">
           <div className="text-xl sm:text-2xl font-bold text-ink tracking-wide">
-            I<sub>t</sub> = 100 × ∑ [ w<sub>j</sub> × ( P<sub>j, t, T+14</sub> / P<sub>j, 0, T+14</sub> ) ]
+            I<sub>t</sub> = 100 × ∑ [ w<sub>j</sub> × ( P<sub>j, t, T+15</sub> / P<sub>j, 0, T+15</sub> ) ]
           </div>
           <div className="text-xs text-mid-gray">
             Where ∑ w<sub>j</sub> = 1.000 across all 10 monitored domestic corridors
@@ -81,21 +81,21 @@ export default function MethodologyPage() {
             </p>
           </div>
           <div className="rounded-nested border border-hairline bg-canvas p-3.5 space-y-1">
-            <span className="text-ink font-bold">P_(j, t, T+14) (Current Price)</span>
+            <span className="text-ink font-bold">P_(j, t, T+15) (Current Price)</span>
             <p className="text-mid-gray text-[11px] font-sans">
-              Cross-carrier median of lowest available basic economy fares observed on day t at the 14-day booking horizon.
+              Cross-carrier median of lowest available basic economy fares observed on day t at the 15-day booking horizon.
             </p>
           </div>
           <div className="rounded-nested border border-hairline bg-canvas p-3.5 space-y-1">
-            <span className="text-ink font-bold">P_(j, 0, T+14) (Reference Base)</span>
+            <span className="text-ink font-bold">P_(j, 0, T+15) (Reference Base)</span>
             <p className="text-mid-gray text-[11px] font-sans">
               Reference price observed on baseline date (2026-08-01 = 100.00) under identical advance purchase conditions.
             </p>
           </div>
           <div className="rounded-nested border border-hairline bg-canvas p-3.5 space-y-1">
-            <span className="text-ink font-bold">T+14 Advance Anchor</span>
+            <span className="text-ink font-bold">T+15 Advance Anchor</span>
             <p className="text-mid-gray text-[11px] font-sans">
-              Standardized 14-day booking window insulating the headline index from passenger mix shifts.
+              Standardized 15-day booking window insulating the headline index from passenger mix shifts.
             </p>
           </div>
         </div>
@@ -173,7 +173,7 @@ export default function MethodologyPage() {
               <span>Unpooled Advance Purchase Windows</span>
             </div>
             <p className="text-xs text-mid-gray leading-relaxed font-sans">
-              Averaging T+1 and T+45 prices together confuses passenger booking timing shifts with true carrier tariff inflation. The Observatory maintains 5 independent lead-time series and fixes the national headline anchor at T+14 to prevent booking-mix contamination.
+              Averaging T+1 and T+45 prices together confuses passenger booking timing shifts with true carrier tariff inflation. The Observatory maintains 5 independent lead-time series and fixes the national headline anchor at T+15 to prevent booking-mix contamination.
             </p>
           </div>
 

@@ -15,7 +15,7 @@ from services.collectors.live_connector import LiveFlightConnector
 class CollectionScheduler:
     """Orchestrates scheduled multi-horizon collection jobs across active domestic corridors."""
 
-    HORIZONS = [1, 7, 14, 30, 45]
+    HORIZONS = [1, 7, 15, 30, 45]
 
     def __init__(self, connector: Optional[BaseConnector] = None):
         self.connector = connector
@@ -48,6 +48,8 @@ class CollectionScheduler:
         jobs_failed = 0
         total_quotes = 0
 
+        from services.collectors.dual_feed_runner import run_dual_feed_collection
+
         for route in routes:
             for horizon in self.HORIZONS:
                 travel_date = search_date + datetime.timedelta(days=horizon)
@@ -68,14 +70,50 @@ class CollectionScheduler:
                 db.refresh(job)
                 jobs_created += 1
 
-                # Execute Job through BaseConnector pipeline
-                res = active_connector.execute_job(db, job)
-
-                if res.success:
-                    jobs_success += 1
-                    total_quotes += res.quotes_parsed
+                if connector is not None:
+                    try:
+                        res = active_connector.execute_job(db, job)
+                        if res.success:
+                            job.status = "COMPLETED"
+                            job.collected_quotes_count = res.quotes_parsed
+                            jobs_success += 1
+                            total_quotes += res.quotes_parsed
+                        else:
+                            job.status = "FAILED"
+                            jobs_failed += 1
+                    except Exception as e:
+                        job.status = "FAILED"
+                        job.error_message = str(e)
+                        jobs_failed += 1
                 else:
-                    jobs_failed += 1
+                    # Production authentic dual-feed collection (Carrier Direct + Google Flights RPC Validator)
+                    try:
+                        reconciliation = run_dual_feed_collection(
+                            route_code=route.route_code,
+                            advance_days=horizon,
+                            search_date=search_date,
+                        )
+                        count = len(reconciliation.get("primary_observations", []))
+                        job.status = "COMPLETED"
+                        job.collected_quotes_count = count
+                        jobs_success += 1
+                        total_quotes += count
+                    except Exception as e:
+                        # Resilient fallback to connector job execution
+                        try:
+                            res = active_connector.execute_job(db, job)
+                            if res.success:
+                                job.status = "COMPLETED"
+                                jobs_success += 1
+                                total_quotes += res.quotes_parsed
+                            else:
+                                job.status = "FAILED"
+                                jobs_failed += 1
+                        except Exception as inner_e:
+                            job.status = "FAILED"
+                            job.error_message = f"{e} | {inner_e}"
+                            jobs_failed += 1
+                db.commit()
 
         # Chain automated DailyIndexCalculatorService, CarrierInflationService, and VolatilityService
         from packages.statistics.carrier_inflation import CarrierInflationService
@@ -99,7 +137,7 @@ class CollectionScheduler:
             carrier_indices = CarrierInflationService.calculate_carrier_indices(
                 db=db,
                 observation_date=search_date,
-                horizon_days=14,
+                horizon_days=15,
             )
         except Exception as e:
             print(
@@ -112,7 +150,7 @@ class CollectionScheduler:
                     db=db,
                     route_id=route.id,
                     calculation_date=search_date,
-                    horizon_days=14,
+                    horizon_days=15,
                     save_to_db=True,
                 )
                 if res:

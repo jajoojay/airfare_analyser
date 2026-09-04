@@ -63,9 +63,9 @@
 ---
 
 ## 3. Statistical Calculation Pipeline
-1. **Raw Collection:** Collects lowest quotes across 5 horizons ($T+1, T+7, T+14, T+30, T+45$).
+1. **Raw Collection:** Collects lowest quotes across 5 horizons ($T+1, T+7, T+15, T+30, T+45$).
 2. **Quality Verification:** Rule-based filtering (PRD Sec 62) drops invalid fares, anomalies, and duplicates.
-3. **Representative Price:** For each route, carrier, and date, the lowest economy fare is selected. The cross-carrier median represents the route price $P_{j,t,14}$.
+3. **Representative Price:** For each route, carrier, and date, the lowest economy fare is selected. The cross-carrier median represents the route price $P_{j,t,15}$.
 4. **DGCA Route Weighting:** Aggregates bidirectional passenger traffic across 10 corridors, strictly normalized so $\sum w_j = 1.000000$.
-5. **Headline Index Calculation:** Computed using the Modified Laspeyres formulation anchored at $T+14$.
+5. **Headline Index Calculation:** Computed using the Modified Laspeyres formulation anchored at $T+15$.
 6. **Benchmark Validation:** Frequency-matched monthly aggregation evaluated against official MoSPI CPI Airfare series.

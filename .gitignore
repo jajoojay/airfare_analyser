@@ -57,3 +57,7 @@ Thumbs.db
 
 # Docker
 pgdata/
+
+# Internal Diagrams & Scraped Raw Payloads
+*.mermaid
+data/raw/

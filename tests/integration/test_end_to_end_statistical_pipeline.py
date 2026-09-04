@@ -9,7 +9,7 @@ def test_end_to_end_statistical_pipeline_execution():
     """
     Tests the complete statistical pipeline:
     1. Queries route weights from DB.
-    2. Extracts observations for anchor horizon T+14.
+    2. Extracts observations for anchor horizon T+15.
     3. Runs lowest-economy representative price estimator across carriers.
     4. Computes Modified Laspeyres index relative to base period.
     """

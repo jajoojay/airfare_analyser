@@ -117,11 +117,11 @@ def run_demo_rehearsal():
         # ---------------------------------------------------------------------
         # STEP 4: Daily Headline Airfare Index & Sub-Indices
         # ---------------------------------------------------------------------
-        print_header("Step 4: National Airfare Price Index (T+14 Anchor & Dual Series)")
+        print_header("Step 4: National Airfare Price Index (T+15 Anchor & Dual Series)")
         latest_headline = (
             db.query(IndexValue)
             .filter(
-                IndexValue.index_type == "HEADLINE_T14",
+                IndexValue.index_type.in_(["HEADLINE_T15", "HEADLINE_T14"]),
                 IndexValue.index_series == "BASE_FARE",
                 IndexValue.route_id.is_(None),
             )
@@ -132,7 +132,7 @@ def run_demo_rehearsal():
             print(
                 f"[*] Latest Headline Index: {latest_headline.index_value:.2f} (Base: 2026-08-01 = 100)"
             )
-            print("    - Anchor Horizon:      T+14 (Two-Week Advance Purchase)")
+            print("    - Anchor Horizon:      T+15 (Two-Week Advance Purchase)")
             print("    - Series Basis:        Base Fare Basis (Pure Carrier Pricing Behavior)")
             d_chg = (
                 f"{latest_headline.daily_change_pct:+.2f}%"
@@ -161,7 +161,7 @@ def run_demo_rehearsal():
         horizons = [
             ("T+45", 45, 4200.0, "Early Bird"),
             ("T+30", 30, 4450.0, "Monthly Plan"),
-            ("T+14", 14, 4980.0, "Headline Anchor"),
+            ("T+15", 15, 4980.0, "Headline Anchor"),
             ("T+7", 7, 6850.0, "Weekly Plan"),
             ("T+1", 1, 10290.0, "Departure Eve"),
         ]

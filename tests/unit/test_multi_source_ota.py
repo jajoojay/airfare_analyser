@@ -155,7 +155,7 @@ def test_multi_source_orchestrator_execution():
     db = SessionLocal()
     try:
         orch = MultiSourceFlightOrchestrator()
-        res = orch.collect_corridor_all_sources(route_code="DEL-BOM", advance_days=14, db=db)
+        res = orch.collect_corridor_all_sources(route_code="DEL-BOM", advance_days=15, db=db)
 
         assert res["route_code"] == "DEL-BOM"
         assert res["total_quotes_collected"] > 0
@@ -175,18 +175,18 @@ def test_multi_source_orchestrator_execution():
 def test_api_endpoints_ota(client):
     """Verify all /api/v1/ota endpoints respond successfully with valid schemas."""
     # 1. Common flights endpoint
-    res = client.get("/api/v1/ota/common-flights?route_code=DEL-BOM&horizon=14")
+    res = client.get("/api/v1/ota/common-flights?route_code=DEL-BOM&horizon=15")
     assert res.status_code == 200
     data = res.json()
     assert data["route_code"] == "DEL-BOM"
-    assert data["horizon_days"] == 14
+    assert data["horizon_days"] == 15
     assert len(data["common_flights"]) > 0
     cf = data["common_flights"][0]
     assert "canonical_median_fare" in cf
     assert "platform_matrix" in cf
 
     # 2. Dispersion ranking endpoint
-    res_rank = client.get("/api/v1/ota/dispersion-ranking?route_code=DEL-BOM&horizon=14")
+    res_rank = client.get("/api/v1/ota/dispersion-ranking?route_code=DEL-BOM&horizon=15")
     assert res_rank.status_code == 200
     rank_data = res_rank.json()
     assert rank_data["total_flights_analyzed"] > 0

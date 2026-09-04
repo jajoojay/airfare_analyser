@@ -14,7 +14,7 @@ def test_carrier_inflation_calculation():
         records = CarrierInflationService.calculate_carrier_indices(
             db=db,
             observation_date=today,
-            horizon_days=14,
+            horizon_days=15,
         )
 
         assert len(records) > 0
@@ -24,7 +24,7 @@ def test_carrier_inflation_calculation():
             assert r.routes_covered >= 0
 
         # Verify scorecard
-        scorecard = CarrierInflationService.get_latest_carrier_inflation(db, horizon_days=14)
+        scorecard = CarrierInflationService.get_latest_carrier_inflation(db, horizon_days=15)
         assert "carriers" in scorecard
         assert len(scorecard["carriers"]) == 4
         assert "carrier_inflation_spread" in scorecard
@@ -38,7 +38,7 @@ def test_carrier_timeseries_retrieval():
     """Verifies multi-carrier timeseries formatting."""
     db = SessionLocal()
     try:
-        ts = CarrierInflationService.get_carrier_timeseries(db, horizon_days=14, limit=10)
+        ts = CarrierInflationService.get_carrier_timeseries(db, horizon_days=15, limit=10)
         assert isinstance(ts, list)
         if ts:
             assert "date" in ts[0]

@@ -11,7 +11,7 @@ def test_fare_parser_valid_response():
     payload = {
         "status": "OK",
         "route": "DEL-BOM",
-        "advance_days": 14,
+        "advance_days": 15,
         "flights": [
             {
                 "carrier": "6E",
@@ -29,7 +29,7 @@ def test_fare_parser_valid_response():
         ],
     }
 
-    quotes = FareParser.parse_search_response(payload, route_code="DEL-BOM", advance_days=14)
+    quotes = FareParser.parse_search_response(payload, route_code="DEL-BOM", advance_days=15)
     assert len(quotes) == 1
     q = quotes[0]
     assert q["carrier"] == "6E"

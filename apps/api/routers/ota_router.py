@@ -22,7 +22,7 @@ orchestrator = MultiSourceFlightOrchestrator()
 @router.get("/common-flights")
 def get_common_flights(
     route_code: str = Query("DEL-BOM", description="Corridor code, e.g. DEL-BOM"),
-    horizon: int = Query(14, description="Advance purchase days, e.g. 1, 7, 14, 30, 45"),
+    horizon: int = Query(15, description="Advance purchase days, e.g. 1, 7, 15, 30, 45"),
     db: Session = Depends(get_db),
 ) -> Dict[str, Any]:
     """

@@ -72,7 +72,7 @@ def test_lead_time_elasticity_surge_multiplier():
     prices = {
         45: 4000.0,
         30: 4250.0,
-        14: 4800.0,
+        15: 4800.0,
         7: 6100.0,
         1: 9800.0,
     }

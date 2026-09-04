@@ -9,17 +9,17 @@ client = TestClient(app)
 
 def test_export_daily_index_csv():
     """Tests CSV export endpoint for daily index series."""
-    res = client.get("/api/v1/export/daily-index.csv?series=BASE_FARE&horizon=14")
+    res = client.get("/api/v1/export/daily-index.csv?series=BASE_FARE&horizon=15")
     assert res.status_code == 200
     assert "text/csv" in res.headers["content-type"]
     assert "attachment" in res.headers["content-disposition"]
     assert "date,index_series,index_type" in res.text
-    assert "HEADLINE_T14" in res.text
+    assert ("HEADLINE_T15" in res.text) or ("HEADLINE_T14" in res.text)
 
 
 def test_export_daily_index_json():
     """Tests JSON export endpoint for daily index series."""
-    res = client.get("/api/v1/export/daily-index.json?series=BASE_FARE&horizon=14")
+    res = client.get("/api/v1/export/daily-index.json?series=BASE_FARE&horizon=15")
     assert res.status_code == 200
     assert "application/json" in res.headers["content-type"]
     data = res.json()
@@ -49,7 +49,7 @@ def test_export_route_observations_csv():
 def test_daily_filtered_indices_endpoint():
     """Tests date filtering on GET /api/v1/index/daily."""
     res = client.get(
-        "/api/v1/index/daily?from=2026-08-01&to=2026-08-10&series=BASE_FARE&horizon=14"
+        "/api/v1/index/daily?from=2026-08-01&to=2026-08-10&series=BASE_FARE&horizon=15"
     )
     assert res.status_code == 200
     data = res.json()

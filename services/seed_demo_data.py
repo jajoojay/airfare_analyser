@@ -4,7 +4,7 @@ Boots the entire India Airfare Price Observatory from scratch:
 1. Populates reference routes and airlines.
 2. Ingests DGCA passenger traffic volume and computes normalized weights (10 corridors).
 3. Generates 30 consecutive calendar days of realistic domestic fare observations (tagged is_synthetic=True).
-4. Calculates daily headline indices (T+14 Anchor), lead-time sub-indices, and route-level indices.
+4. Calculates daily headline indices (T+15 Anchor), lead-time sub-indices, and route-level indices.
 5. Ingests official MoSPI CPI airfare benchmarks and computes directional co-movement.
 6. Ingests IOCL / PPAC metropolitan ATF jet fuel price series and taxes.
 """
@@ -60,7 +60,7 @@ def run_full_seed_pipeline():
         )
 
         # 5. Compute daily headline index, sub-indices, and route-level series
-        print("[5/6] Computing daily airfare price indices (T+14 Anchor, Dual Series)...")
+        print("[5/6] Computing daily airfare price indices (T+15 Anchor, Dual Series)...")
         total_indices = DailyIndexCalculatorService.calculate_all_historical_days(
             db=db,
             start_date=start_date,
@@ -78,7 +78,7 @@ def run_full_seed_pipeline():
 
         print("\n" + "=" * 70)
         print(" PIPELINE SEEDING COMPLETE — ALL SYSTEMS FULLY OPERATIONAL!")
-        print(" Headline Index: T+14 Anchor | Base: 2026-08-01 = 100")
+        print(" Headline Index: T+15 Anchor | Base: 2026-08-01 = 100")
         print(" Dashboard: http://localhost:3000 | API Docs: http://localhost:8000/docs")
         print("=" * 70)
 

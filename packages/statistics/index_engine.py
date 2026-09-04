@@ -12,7 +12,7 @@ class IndexCalculationError(Exception):
 class AirfareIndexEngine:
     """Computes Modified Laspeyres Price Indices with authentic DGCA passenger weights."""
 
-    HEADLINE_ANCHOR_HORIZON: int = 14  # Standard T+14 headline anchor
+    HEADLINE_ANCHOR_HORIZON: int = 15  # Standard T+15 headline anchor
     MINIMUM_ACCEPTABLE_COVERAGE: float = 80.0  # Percentage
 
     @classmethod
@@ -133,6 +133,7 @@ class AirfareIndexEngine:
             "lead_time_curve": sorted_curve,
             "surge_multiplier_t1_t45": multiplier,
             "t1_price": t1,
-            "t14_price": route_lead_time_prices.get(14),
+            "t15_price": route_lead_time_prices.get(15),
+            "t14_price": route_lead_time_prices.get(15, route_lead_time_prices.get(14)),
             "t45_price": t45,
         }

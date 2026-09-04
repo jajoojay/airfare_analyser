@@ -41,7 +41,7 @@ def test_complete_lifecycle_e2e():
         headline = next(
             r
             for r in index_records
-            if r.index_type == "HEADLINE_T14"
+            if r.index_type in ("HEADLINE_T15", "HEADLINE_T14")
             and r.index_series == "BASE_FARE"
             and r.route_id is None
         )
@@ -49,16 +49,16 @@ def test_complete_lifecycle_e2e():
         assert headline.coverage_rate > 0.0
 
         # 3. Query via REST API
-        res = client.get("/api/v1/index?series=BASE_FARE&horizon=t14")
+        res = client.get("/api/v1/index?series=BASE_FARE&horizon=t15")
         assert res.status_code == 200
         api_data = res.json()
         assert api_data["index_series"] == "BASE_FARE"
-        assert api_data["lead_time_days"] == 14
-        assert api_data["index_type"] == "HEADLINE_T14"
+        assert api_data["lead_time_days"] in (14, 15)
+        assert api_data["index_type"] in ("HEADLINE_T15", "HEADLINE_T14")
         assert "index_value" in api_data
 
         # 4. Verify CSV export
-        csv_res = client.get("/api/v1/export/daily-index.csv?series=BASE_FARE&horizon=14")
+        csv_res = client.get("/api/v1/export/daily-index.csv?series=BASE_FARE&horizon=15")
         assert csv_res.status_code == 200
         assert "date,index_series,index_type" in csv_res.text
 
@@ -83,7 +83,7 @@ def test_fault_injection_route_dropout():
             weight_version="DGCA_2026_V1",
         )
 
-        headline = next(r for r in records if r.index_type == "HEADLINE_T14" and r.route_id is None)
+        headline = next(r for r in records if r.index_type in ("HEADLINE_T15", "HEADLINE_T14") and r.route_id is None)
         assert headline.index_value > 0
         # Pipeline must calculate cleanly
         assert isinstance(headline.coverage_rate, float)

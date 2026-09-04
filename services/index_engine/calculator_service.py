@@ -12,10 +12,10 @@ from packages.statistics.weights import DGCAWeightEngine
 
 
 class DailyIndexCalculatorService:
-    """Calculates daily headline index (T+14), unpooled horizon sub-indices, and route-level indices."""
+    """Calculates daily headline index (T+15), unpooled horizon sub-indices, and route-level indices."""
 
-    HORIZONS = [1, 7, 14, 30, 45]
-    HEADLINE_HORIZON = 14
+    HORIZONS = [1, 7, 15, 30, 45]
+    HEADLINE_HORIZON = 15
     PRICE_SERIES = ["BASE_FARE", "TOTAL_PRICE"]
 
     @classmethod
@@ -83,8 +83,8 @@ class DailyIndexCalculatorService:
     ) -> List[IndexValue]:
         """
         Calculates and persists all daily indices for an observation date:
-        - Headline Index (T+14 Anchor) for BASE_FARE and TOTAL_PRICE
-        - Unpooled Lead-Time Sub-Indices (T+1, T+7, T+14, T+30, T+45)
+        - Headline Index (T+15 Anchor) for BASE_FARE and TOTAL_PRICE
+        - Unpooled Lead-Time Sub-Indices (T+1, T+7, T+15, T+30, T+45)
         - Route-level indices
         - Computes 1D, 7D, and 30D percentage changes.
         """
@@ -112,7 +112,7 @@ class DailyIndexCalculatorService:
 
             for horizon in cls.HORIZONS:
                 is_headline = horizon == cls.HEADLINE_HORIZON
-                index_type = "HEADLINE_T14" if is_headline else f"SUB_T{horizon}"
+                index_type = "HEADLINE_T15" if is_headline else f"SUB_T{horizon}"
 
                 # 1. Representative prices for current date
                 current_prices = cls.get_route_representative_prices(

@@ -17,21 +17,20 @@ router = APIRouter(prefix="/api/v1/export", tags=["Researcher Data Exports"])
 @router.get("/daily-index.csv")
 def export_daily_index_csv(
     series: str = Query("BASE_FARE", pattern="^(BASE_FARE|TOTAL_PRICE)$"),
-    horizon: int = Query(14),
+    horizon: int = Query(15),
     db: Session = Depends(get_db),
 ):
     """Exports daily headline or sub-index time series in CSV format."""
-    itype = "HEADLINE_T14" if horizon == 14 else f"SUB_T{horizon}"
-    records = (
-        db.query(IndexValue)
-        .filter(
-            IndexValue.index_series == series,
-            IndexValue.index_type == itype,
-            IndexValue.route_id.is_(None),
-        )
-        .order_by(IndexValue.period_start.asc())
-        .all()
+    query = db.query(IndexValue).filter(
+        IndexValue.index_series == series,
+        IndexValue.route_id.is_(None),
     )
+    if horizon in (14, 15):
+        query = query.filter(IndexValue.index_type.in_(["HEADLINE_T15", "HEADLINE_T14"]))
+    else:
+        query = query.filter(IndexValue.index_type == f"SUB_T{horizon}")
+
+    records = query.order_by(IndexValue.period_start.asc()).all()
 
     output = io.StringIO()
     writer = csv.writer(output)
@@ -80,21 +79,20 @@ def export_daily_index_csv(
 @router.get("/daily-index.json")
 def export_daily_index_json(
     series: str = Query("BASE_FARE", pattern="^(BASE_FARE|TOTAL_PRICE)$"),
-    horizon: int = Query(14),
+    horizon: int = Query(15),
     db: Session = Depends(get_db),
 ):
     """Exports daily headline or sub-index time series in structured JSON format."""
-    itype = "HEADLINE_T14" if horizon == 14 else f"SUB_T{horizon}"
-    records = (
-        db.query(IndexValue)
-        .filter(
-            IndexValue.index_series == series,
-            IndexValue.index_type == itype,
-            IndexValue.route_id.is_(None),
-        )
-        .order_by(IndexValue.period_start.asc())
-        .all()
+    query = db.query(IndexValue).filter(
+        IndexValue.index_series == series,
+        IndexValue.route_id.is_(None),
     )
+    if horizon in (14, 15):
+        query = query.filter(IndexValue.index_type.in_(["HEADLINE_T15", "HEADLINE_T14"]))
+    else:
+        query = query.filter(IndexValue.index_type == f"SUB_T{horizon}")
+
+    records = query.order_by(IndexValue.period_start.asc()).all()
 
     data = [
         {

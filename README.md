@@ -13,11 +13,11 @@
 
 The **India Airfare Price Observatory** is an official production-grade statistical intelligence platform deployed for the **Ministry of Statistics and Programme Implementation (MoSPI / NSO)**. 
 
-Unlike traditional retrospective monthly surveys, this observatory captures **high-frequency, authentic domestic airfare quotes** directly from airline booking systems across **five advance purchase horizons** ($T+1, T+7, T+14, T+30, T+45$), anchoring its national headline index at **$T+14$** with rigorous **fare-mix confounding protection** (lowest available basic economy fare per carrier).
+Unlike traditional retrospective monthly surveys, this observatory captures **high-frequency, authentic domestic airfare quotes** directly from airline booking systems across **five advance purchase horizons** ($T+1, T+7, T+15, T+30, T+45$), anchoring its national headline index at **$T+15$** with rigorous **fare-mix confounding protection** (lowest available basic economy fare per carrier).
 
 ### Key Architectural & Methodological Guarantees
 1. **Fare-Mix Protection:** Extracts lowest basic economy fare per scheduled carrier before cross-carrier median aggregation. An airline adding expensive flexi/business seats causes **0% artificial inflation bias**.
-2. **Unpooled Lead Times:** Headline index is anchored at **$T+14$** (2-week advance purchase). Different horizons ($T+1$ vs $T+45$) are never averaged together.
+2. **Unpooled Lead Times:** Headline index is anchored at **$T+15$** (2-week advance purchase). Different horizons ($T+1$ vs $T+45$) are never averaged together.
 3. **Dual Price Series:** Provides both **Base Fare Index** (carrier behavioral pricing) and **Total Price Index** (consumer out-of-pocket).
 4. **DGCA Passenger Volume Basket:** Weights 10 representative corridors (8 Metro Trunks + 2 Regional Thin Corridors: `DEL-IXS`, `DEL-DHM`) derived from official DGCA city-pair domestic traffic.
 5. **Directional Co-Movement Framing:** Evaluates directional co-movement ($r = 0.997$, 100% directional accuracy) alongside official retrospective MoSPI CPI benchmarks.

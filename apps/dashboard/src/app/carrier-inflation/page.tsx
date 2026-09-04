@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 
 export default function CarrierInflationPage() {
-  const [horizon, setHorizon] = useState<number>(14);
+  const [horizon, setHorizon] = useState<number>(15);
   const [inflationData, setInflationData] = useState<CarrierInflationResponse | null>(null);
   const [timeseries, setTimeseries] = useState<CarrierTimeseriesPoint[]>([]);
   const [corridors, setCorridors] = useState<CorridorItem[]>([]);
@@ -65,7 +65,7 @@ export default function CarrierInflationPage() {
         badgeVariant="solid"
         action={
           <div className="flex items-center gap-1.5 rounded-[18px] border border-hairline bg-canvas p-1">
-            {([1, 7, 14, 30, 45] as const).map((h) => (
+            {([1, 7, 15, 30, 45] as const).map((h) => (
               <button
                 key={h}
                 onClick={() => setHorizon(h)}

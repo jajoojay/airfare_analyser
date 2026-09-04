@@ -34,7 +34,7 @@ class SyntheticFareGenerator:
     HORIZON_MULTIPLIERS: Dict[int, float] = {
         45: 1.00,  # Early-bird baseline
         30: 1.08,  # +8%
-        14: 1.25,  # +25% (Headline Anchor)
+        15: 1.25,  # +25% (Headline Anchor)
         7: 1.60,  # +60%
         1: 2.45,  # +145% (Last-minute peak)
     }
@@ -48,7 +48,7 @@ class SyntheticFareGenerator:
         "IX": 0.92,  # AI Express value
     }
 
-    HORIZONS: List[int] = [1, 7, 14, 30, 45]
+    HORIZONS: List[int] = [1, 7, 15, 30, 45]
 
     @classmethod
     def generate_day_observations(

@@ -167,7 +167,7 @@ def main():
     parser = argparse.ArgumentParser(description="Dual-Feed Real Airfare Collection Runner")
     parser.add_argument("--route", default="DEL-BOM", help="Route code e.g. DEL-BOM")
     parser.add_argument(
-        "--horizon", type=int, default=7, help="Advance purchase days (1, 7, 14, 30, 45)"
+        "--horizon", type=int, default=7, help="Advance purchase days (1, 7, 15, 30, 45)"
     )
     args = parser.parse_args()
 

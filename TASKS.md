@@ -7,7 +7,7 @@
 > **Core Principle:** *"The scraper is replaceable. The measurement methodology is the product."*  
 > **Target Delivery:** Production-grade statistical observatory featuring:
 > - **Zero Fare-Mix Confounding:** Lowest available economy fare per carrier estimator
-> - **Unpooled Lead-Time Architecture:** Standardized **T+14 headline index** + independent sub-indices ($T+1, T+7, T+14, T+30, T+45$)
+> - **Unpooled Lead-Time Architecture:** Standardized **T+15 headline index** + independent sub-indices ($T+1, T+7, T+15, T+30, T+45$)
 > - **Dual Index Series:** Base Fare Index (airline pricing behavior) & Total Price Index (consumer out-of-pocket)
 > - **DGCA Passenger Volume Weighting:** Metro trunk corridors + regional/thin-route inclusion
 > - **Honest Benchmark Alignment:** Directional co-movement analysis with MoSPI CPI airfare component
@@ -21,7 +21,7 @@
 | Previous Design Flaw | Real-World Critique | Fixed Production Specification |
 |---|---|---|
 | **Fare-Mix Confounding** | Median across all visible tickets conflates Economy Flexi / Business with inflation | **Lowest Available Economy:** Filters for lowest non-refundable Economy seat per carrier before computing cross-carrier median |
-| **Lead-Time Pooling** | Blending T+1 (₹14k panic buy) with T+45 (₹4k advance) produces meaningless prices | **Headline T+14 Anchor:** Primary index anchored at T+14; $T+1, T+7, T+14, T+30, T+45$ tracked as distinct sub-indices |
+| **Lead-Time Pooling** | Blending T+1 (₹14k panic buy) with T+45 (₹4k advance) produces meaningless prices | **Headline T+15 Anchor:** Primary index anchored at T+15; $T+1, T+7, T+15, T+30, T+45$ tracked as distinct sub-indices |
 | **Index Price Basis** | Total fare includes government-mandated taxes/fees unrelated to carrier pricing | **Dual Price Series:** Base Fare Index (carrier behavior) + Total Consumer Price Index (out-of-pocket) |
 | **MoSPI CPI "Validation"** | Apples-to-oranges (field collection vs search-date scrape, fixed route vs dynamic) | **Directional Co-movement:** Reframed as directional tracking & co-movement analysis with explicit methodology differences |
 | **ATF "Causal" Correlation** | 30 days cannot prove causality; airlines hedge fuel 12–18 months out | **Macro Fuel Overlay:** Explanatory context layer showing fuel price movements & 38% cost-share benchmark without unproven regressions |
@@ -35,7 +35,7 @@
 ```text
 Phase 0: Foundation & Environment Setup (Monorepo, Docker, DB, Next.js)
    ↓
-Phase 1: Statistical Core & Synthetic Verification Pipeline (Zero Fare-Mix, T+14 Anchor)
+Phase 1: Statistical Core & Synthetic Verification Pipeline (Zero Fare-Mix, T+15 Anchor)
    ↓
 Phase 2: Source Registry & Acquisition Architecture (Compliance-first, Lineage Hashing)
    ↓
@@ -43,7 +43,7 @@ Phase 3: Live / Permitted Fare Collection Engine (5 Horizons, Fare Decomposition
    ↓
 Phase 4: DGCA Passenger Weights & Route Basket (Metro + Regional Corridors)
    ↓
-Phase 5: Daily Airfare Index Engine & Aggregations (Headline T+14, Lead-Time Sub-indices)
+Phase 5: Daily Airfare Index Engine & Aggregations (Headline T+15, Lead-Time Sub-indices)
    ↓
 Phase 6: Statistical Observatory Dashboard (Next.js + Origin Financial Design Tokens)
    ↓
@@ -127,12 +127,12 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
     - `raw_payloads`: `id`, `source_id`, `collection_job_id`, `payload_uri`, `payload_hash` (SHA-256), `content_type`, `captured_at`.
     - `route_weights`: `id`, `route_id`, `passenger_volume`, `weight`, `methodology_version`, `effective_from`, `effective_to`.
     - `collection_jobs`: `id`, `route_id`, `source_id`, `search_date`, `travel_date`, `advance_days`, `status`, `attempt_count`, `started_at`, `completed_at`, `error_code`, `error_message`.
-    - `index_values`: `id`, `index_series` (`BASE_FARE`, `TOTAL_PRICE`), `index_type` (`HEADLINE_T14`, `SUB_T1`, `SUB_T7`, `SUB_T14`, `SUB_T30`, `SUB_T45`, `ROUTE_LEVEL`), `lead_time_days`, `period_start`, `period_end`, `route_id`, `index_value`, `coverage_rate`, `methodology_version`, `weight_version`, `calculated_at`.
+    - `index_values`: `id`, `index_series` (`BASE_FARE`, `TOTAL_PRICE`), `index_type` (`HEADLINE_T15`, `SUB_T1`, `SUB_T7`, `SUB_T15`, `SUB_T30`, `SUB_T45`, `ROUTE_LEVEL`), `lead_time_days`, `period_start`, `period_end`, `route_id`, `index_value`, `coverage_rate`, `methodology_version`, `weight_version`, `calculated_at`.
     - `benchmark_values`: `id`, `period`, `indicator`, `value`, `source`, `source_version`.
     - `validation_results`: `id`, `period_start`, `period_end`, `series_evaluated`, `correlation`, `mae`, `rmse`, `directional_accuracy`, `methodology_notes`, `created_at`.
     - `atf_prices`: `id`, `location`, `date`, `price_per_kl`, `source`.
     - `atf_tax_rates`: `id`, `effective_from`, `effective_to`, `tax_type`, `rate`, `source`.
-    - `methodology_versions`: `id`, `version`, `name`, `base_period`, `anchor_lead_time` (`T+14`), `price_estimator`, `missing_data_method`, `weight_method`, `formula`, `effective_from`, `notes`.
+    - `methodology_versions`: `id`, `version`, `name`, `base_period`, `anchor_lead_time` (`T+15`), `price_estimator`, `missing_data_method`, `weight_method`, `formula`, `effective_from`, `notes`.
   - Generate and run baseline Alembic migration.
   - **Acceptance Criteria:** `alembic upgrade head` executes and creates all 13 tables with constraints.
 
@@ -179,8 +179,8 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
   - **PRD Ref:** Section 14, 15, 30, 34; `real_world_critique.md` Problem 5
   - Create `services/synthetic_generator.py`:
     - Generates 30+ days of historical observations across all 10 routes.
-    - Simulates 5 distinct lead times: **T+1, T+7, T+14, T+30, T+45**.
-    - Realistic yield curve dynamics: steep surge near T+1, moderate T+7, stable T+14, early-bird discounts T+45.
+    - Simulates 5 distinct lead times: **T+1, T+7, T+15, T+30, T+45**.
+    - Realistic yield curve dynamics: steep surge near T+1, moderate T+7, stable T+15, early-bird discounts T+45.
     - Captures multiple fares per flight (Economy Basic vs Economy Flexi).
     - Decomposes mandatory fare elements: `base_fare`, `fuel_surcharge`, `tax_amount` (GST), `development_fee` (UDF), `convenience_fee`.
     - Explicit availability states: `AVAILABLE`, `SOLD_OUT`, `CANCELLED`.
@@ -222,9 +222,9 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
 - [x] **Task 1.6: Unpooled Modified Laspeyres Airfare Price Index Engine**
   - **PRD Ref:** Section 23, 26, 27, 28; `real_world_critique.md` Problem 3 & Fix 2
   - Create `packages/statistics/index_engine.py`:
-    - **Headline Index ($I_t^{\text{Headline}}$):** Anchored exclusively at **T+14**:
-      $$I_t^{\text{Headline}} = 100 \sum_{j=1}^{n} w_j \cdot \frac{P_{j,t,T+14}}{P_{j,0,T+14}}$$
-    - **Independent Horizon Sub-Indices:** Computes separate series for $T+1, T+7, T+14, T+30, T+45$ without pooling across lead times.
+    - **Headline Index ($I_t^{\text{Headline}}$):** Anchored exclusively at **T+15**:
+      $$I_t^{\text{Headline}} = 100 \sum_{j=1}^{n} w_j \cdot \frac{P_{j,t,T+15}}{P_{j,0,T+15}}$$
+    - **Independent Horizon Sub-Indices:** Computes separate series for $T+1, T+7, T+15, T+30, T+45$ without pooling across lead times.
     - **Dual Series Generation:** Generates both `BASE_FARE_INDEX` (carrier pricing behavior) and `TOTAL_PRICE_INDEX` (consumer out-of-pocket).
     - Coverage rate guard: If route coverage $< 80\%$, flags index record with `LOW_COVERAGE`.
   - **Acceptance Criteria:** Calculations produce distinct headline and lead-time sub-indices without blending different booking horizons.
@@ -291,7 +291,7 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
   - **PRD Ref:** Section 11.1, 11.2, 13
   - Create `services/collectors/live_connector.py`:
     - Playwright / Headless browser / Permitted API client for domestic search.
-    - Queries configured routes for $T+1, T+7, T+14, T+30, T+45$.
+    - Queries configured routes for $T+1, T+7, T+15, T+30, T+45$.
     - Captures domestic flight options, carrier codes, flight numbers, cabin classes, departure times.
   - **Acceptance Criteria:** Single invocation queries 5 horizon dates and returns raw response payloads.
 
@@ -351,21 +351,21 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
 ## Phase 5: Daily Airfare Index Engine & Aggregations
 **Objective:** Calculate daily national and route-level price indices, unpooled lead-time indices, and compute multi-frequency temporal aggregations.
 
-- [x] **Task 5.1: Daily Headline Index Pipeline ($T+14$ Anchor)**
+- [x] **Task 5.1: Daily Headline Index Pipeline ($T+15$ Anchor)**
   - **PRD Ref:** Section 27, 28, 40.8; `real_world_critique.md` Fix 2
   - Create daily calculation service:
-    - Gathers cleaned observations for date $t$ at horizon $h = T+14$.
-    - Computes representative price $P_{j,t,T+14}$ using lowest-economy median estimator.
+    - Gathers cleaned observations for date $t$ at horizon $h = T+15$.
+    - Computes representative price $P_{j,t,T+15}$ using lowest-economy median estimator.
     - Computes route relatives $R_{j,t} = P_{j,t} / P_{j,0}$.
     - Calculates National Headline Index: $I_t^{\text{Headline}} = 100 \sum w_j R_{j,t}$.
     - Calculates both `BASE_FARE` and `TOTAL_PRICE` variants.
     - Records daily deltas: 1D, 7D, 30D percentage change.
-  - **Acceptance Criteria:** Service produces daily headline index anchored at T+14 with both price bases.
+  - **Acceptance Criteria:** Service produces daily headline index anchored at T+15 with both price bases.
 
-- [x] **Task 5.2: Unpooled Lead-Time Sub-Indices ($T+1, T+7, T+14, T+30, T+45$)**
+- [x] **Task 5.2: Unpooled Lead-Time Sub-Indices ($T+1, T+7, T+15, T+30, T+45$)**
   - **PRD Ref:** Section 28, 30; `real_world_critique.md` Problem 3
   - Calculate independent sub-indices for each lead-time horizon:
-    - $I_{t, T+1}, I_{t, T+7}, I_{t, T+14}, I_{t, T+30}, I_{t, T+45}$.
+    - $I_{t, T+1}, I_{t, T+7}, I_{t, T+15}, I_{t, T+30}, I_{t, T+45}$.
     - Enables tracking inflation divergence between last-minute bookings ($T+1$) and advance bookings ($T+45$).
   - **Acceptance Criteria:** Sub-indices generated independently without cross-horizon blending.
 
@@ -408,7 +408,7 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
   - **PRD Ref:** Section 43, 74; `real_world_critique.md` Fix 5
   - Build `/` landing dashboard:
     - Hero Metric Card: **India Airfare Price Index** (e.g. `108.42`), +1.72% Today, +3.81% 7D, +6.10% 30D.
-    - Sub-header tag: `HEADLINE ANCHOR: T+14 ADVANCE PURCHASE | BASE FARE BASIS | BASE: 2026-08-01 = 100`.
+    - Sub-header tag: `HEADLINE ANCHOR: T+15 ADVANCE PURCHASE | BASE FARE BASIS | BASE: 2026-08-01 = 100`.
     - Price Basis Toggle: Switch between **Base Fare Index** (carrier behavior) and **Total Price Index** (consumer out-of-pocket).
     - KPI Grid: National Coverage % (`94.6%`), Basket Corridors (`10`), Valid Quotes Today (`12,482`), Active Version (`APIX-2.0`).
     - Primary Interactive Time Series Chart: 30-day daily national airfare index with hover tooltips and lead-time horizon selector overlay.
@@ -437,7 +437,7 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
   - **PRD Ref:** Section 31, 46, 76; `real_world_critique.md` Fix 2
   - Build `/lead-time`:
     - Interactive controls: Route selector, Carrier filter, Date selector.
-    - Dynamic Lead-Time Curve: $T+45 \rightarrow T+30 \rightarrow T+14 \rightarrow T+7 \rightarrow T+1$.
+    - Dynamic Lead-Time Curve: $T+45 \rightarrow T+30 \rightarrow T+15 \rightarrow T+7 \rightarrow T+1$.
     - Dynamic Lead-Time Multiplier metric display:
       $$\text{Surge Multiplier} = \frac{\text{Price}_{T+1}}{\text{Price}_{T+45}} \quad (\text{e.g. } 2.45\times)$$
     - Lead-Time spread comparison across airlines (which airline escalates last-minute fares highest).
@@ -487,7 +487,7 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
     - Mathematical formulation visualizer: Modified Laspeyres formula with LaTeX KaTeX equations.
     - Active Route Basket table: 10 city pairs, corridor types, DGCA passenger volume, calculated weights $w_j$.
     - Estimator documentation: Lowest available Economy fare rationale (fare-mix protection).
-    - Anchor window rationale: Why T+14 was chosen as headline.
+    - Anchor window rationale: Why T+15 was chosen as headline.
     - Documented limitations: Boarded passenger weighting nuances and thin-route representation.
     - Version history: Active version `APIX-2.0`, effective date, change log.
   - **Acceptance Criteria:** Analyst can understand full calculation methodology and documented limitations without inspecting code.
@@ -496,7 +496,7 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
   - **PRD Ref:** Section 66; `Design rules/`
   - Top navigation bar with:
     - Brand title: **INDIA AIRFARE PRICE OBSERVATORY**
-    - Live Status Pill: `● SYSTEM OPERATIONAL | ANCHOR: T+14 | BASE: 2026-08-01 = 100`
+    - Live Status Pill: `● SYSTEM OPERATIONAL | ANCHOR: T+15 | BASE: 2026-08-01 = 100`
     - Date range picker (7D, 30D, 90D, Custom)
     - Direct links to: Overview, Routes, Lead-Time, Benchmark, Quality, Health, Fuel Context, Methodology.
   - **Acceptance Criteria:** Navigation works smoothly across all 9 views with shared date filters.
@@ -564,12 +564,12 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
 - [x] **Task 9.1: Core Statistical API Routers**
   - **PRD Ref:** Section 42, 65; `real_world_critique.md`
   - Implement FastAPI router endpoints:
-    - `GET /api/v1/index?series={base_fare|total_price}&horizon={t14|t1|t7|t30|t45}`: Current headline index and sub-indices, 1D/7D/30D deltas, coverage rate.
+    - `GET /api/v1/index?series={base_fare|total_price}&horizon={t15|t1|t7|t30|t45}`: Current headline index and sub-indices, 1D/7D/30D deltas, coverage rate.
     - `GET /api/v1/index/daily?from={date}&to={date}&series={base_fare|total_price}`: Daily time-series with coverage.
     - `GET /api/v1/index/monthly`: Monthly aggregated time-series.
     - `GET /api/v1/routes`: Route basket summary with corridor types, current index, and weights.
     - `GET /api/v1/routes/{route_id}`: Route analytics, fare components, lowest economy carrier breakdown.
-    - `GET /api/v1/routes/{route_id}/lead-time`: T+1, T+7, T+14, T+30, T+45 prices and surge multiplier ($T+1/T+45$).
+    - `GET /api/v1/routes/{route_id}/lead-time`: T+1, T+7, T+15, T+30, T+45 prices and surge multiplier ($T+1/T+45$).
     - `GET /api/v1/weights`: Current and historical DGCA route weights.
     - `GET /api/v1/validation`: Official MoSPI benchmark comparison & directional co-movement metrics.
     - `GET /api/v1/data-quality`: Ingestion health, valid vs rejected quotes, coverage rates.
@@ -615,7 +615,7 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
     - Ingests reference DGCA passenger weights (10 routes).
     - Seeds 30 consecutive days of realistic, deterministic domestic fare observations across all 5 lead-time windows.
     - Explicitly tags records with `is_synthetic = True` for audit transparency.
-    - Computes daily route and national headline indices ($T+14$), lead-time sub-indices, and monthly aggregations.
+    - Computes daily route and national headline indices ($T+15$), lead-time sub-indices, and monthly aggregations.
     - Seeds MoSPI CPI benchmark and ATF fuel series.
     - Computes directional co-movement metrics.
   - **Acceptance Criteria:** Running the command on a fresh database boots the entire platform with full 30-day historical data.
@@ -636,7 +636,7 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
   - Rehearse and verify the 6-minute presentation script:
     - **0:00–0:45:** The real-world problem: official monthly CPI cannot capture high-frequency or lead-time dynamics.
     - **0:45–1:30:** Collection & 5 advance purchase horizons ($T+1$ to $T+45$) with lowest-economy fare-mix protection.
-    - **1:30–2:30:** National Headline Index ($T+14$ anchor), DGCA corridor weights, and route contribution attribution.
+    - **1:30–2:30:** National Headline Index ($T+15$ anchor), DGCA corridor weights, and route contribution attribution.
     - **2:30–3:30:** The "WOW" Lead-Time Elasticity curve & surge multiplier ($T+1 / T+45$).
     - **3:30–4:30:** MoSPI benchmark directional co-movement analysis and honest methodology comparison.
     - **4:30–5:15:** Data quality, quote capture rate, and source health monitoring.
@@ -665,7 +665,7 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
 
 - [ ] **Task 11.2: Booking Pressure & Lead-Time Forecast Skeleton**
   - **PRD Ref:** Section 85
-  - Scaffolding for predicting expected fare inflation between $T+14$ and $T+1$.
+  - Scaffolding for predicting expected fare inflation between $T+15$ and $T+1$.
   - Explicit guardrail: ML predictions are labeled auxiliary and separated from statistical CPI indices.
   - **Acceptance Criteria:** API endpoint `/api/v1/forecast/preview` returns exploratory forecast object.
 
@@ -676,7 +676,7 @@ Phase 11: Machine Learning & Anomaly Detection Foundations (P2/P3 Future Scope)
 | Phase | Description | Priority | Prerequisite | Status |
 |---|---|---|---|---|
 | **Phase 0** | Foundation & Environment Setup | P0 | None | ✅ Completed |
-| **Phase 1** | Statistical Core & Synthetic Verification (T+14 Anchor) | P0 | Phase 0 | ✅ Completed |
+| **Phase 1** | Statistical Core & Synthetic Verification (T+15 Anchor) | P0 | Phase 0 | ✅ Completed |
 | **Phase 2** | Source Registry & Collection Architecture | P0 | Phase 1 | ✅ Completed |
 | **Phase 3** | Live / Permitted Fare Collection Pipeline | P0 | Phase 2 | ✅ Completed |
 | **Phase 4** | DGCA Route Weights & Basket Engine | P0 | Phase 1 | ✅ Completed |
