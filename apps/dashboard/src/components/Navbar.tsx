@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { 
-  Plane, 
   Activity, 
   Route, 
   TrendingUp, 
@@ -82,21 +82,15 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-hairline bg-paper/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-2.5">
         {/* Brand & Institutional Identity */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-canvas border border-hairline text-ink group-hover:border-mid-gray transition-colors">
-            <Plane className="h-4.5 w-4.5 text-ink group-hover:scale-105 transition-transform" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-sm tracking-tight text-ink font-sans">
-                AIRFARE OBSERVATORY
-              </span>
-              <span className="rounded-[18px] bg-canvas px-2 py-0.5 text-[10px] font-medium text-mid-gray border border-hairline font-sans">
-                MoSPI / NSO · APIx
-              </span>
-            </div>
-            <p className="text-[11px] text-mid-gray font-sans tracking-tight">National Price Intelligence · India</p>
-          </div>
+        <Link href="/" className="flex items-center group py-0.5" aria-label="PRAVAAH Home">
+          <Image
+            src="/logo.png"
+            alt="PRAVAAH"
+            width={164}
+            height={32}
+            className="h-8 w-auto object-contain transition-opacity group-hover:opacity-90"
+            priority
+          />
         </Link>
 
         {/* Desktop 4-Pillar Navigation */}
