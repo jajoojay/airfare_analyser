@@ -1,0 +1,72 @@
+{
+  "advance_days": 30,
+  "flights": [
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4428.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "6E",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "6E-3030",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 263.9,
+      "total_fare": 6190.9
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4693.68,
+      "cabin_class": "ECONOMY",
+      "carrier": "AI",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "AI-3030",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 277.18,
+      "total_fare": 6469.86
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4206.6,
+      "cabin_class": "ECONOMY",
+      "carrier": "SG",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "SG-3030",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 252.83,
+      "total_fare": 5958.43
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4295.16,
+      "cabin_class": "ECONOMY",
+      "carrier": "QP",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "QP-3030",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 257.26,
+      "total_fare": 6051.42
+    }
+  ],
+  "route": "DEL-CCU",
+  "status": "OK",
+  "travel_date": "2026-10-02"
+}

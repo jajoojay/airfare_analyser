@@ -1,0 +1,72 @@
+{
+  "advance_days": 45,
+  "flights": [
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4200.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "6E",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "6E-3045",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 252.5,
+      "total_fare": 5951.5
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4452.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "AI",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "AI-3045",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 265.1,
+      "total_fare": 6216.1
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 3990.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "SG",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "SG-3045",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 242.0,
+      "total_fare": 5731.0
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4074.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "QP",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "QP-3045",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 246.2,
+      "total_fare": 5819.2
+    }
+  ],
+  "route": "DEL-BOM",
+  "status": "OK",
+  "travel_date": "2026-10-17"
+}

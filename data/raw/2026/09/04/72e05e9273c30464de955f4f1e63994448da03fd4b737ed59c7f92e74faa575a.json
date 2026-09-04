@@ -1,0 +1,72 @@
+{
+  "advance_days": 14,
+  "flights": [
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4750.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "6E",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "6E-3014",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 280.0,
+      "total_fare": 6529.0
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 5035.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "AI",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "AI-3014",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 294.25,
+      "total_fare": 6828.25
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4512.5,
+      "cabin_class": "ECONOMY",
+      "carrier": "SG",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "SG-3014",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 268.12,
+      "total_fare": 6279.62
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4607.5,
+      "cabin_class": "ECONOMY",
+      "carrier": "QP",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "QP-3014",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 272.88,
+      "total_fare": 6379.38
+    }
+  ],
+  "route": "DEL-HYD",
+  "status": "OK",
+  "travel_date": "2026-09-16"
+}

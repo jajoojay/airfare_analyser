@@ -1,0 +1,72 @@
+{
+  "advance_days": 1,
+  "flights": [
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 11025.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "6E",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "6E-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 593.75,
+      "total_fare": 13117.75
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 11686.5,
+      "cabin_class": "ECONOMY",
+      "carrier": "AI",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "AI-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 626.83,
+      "total_fare": 13812.33
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 10473.75,
+      "cabin_class": "ECONOMY",
+      "carrier": "SG",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "SG-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 566.19,
+      "total_fare": 12538.94
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 10694.25,
+      "cabin_class": "ECONOMY",
+      "carrier": "QP",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "QP-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 577.21,
+      "total_fare": 12770.46
+    }
+  ],
+  "route": "DEL-BLR",
+  "status": "OK",
+  "travel_date": "2026-09-03"
+}

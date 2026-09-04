@@ -1,0 +1,72 @@
+{
+  "advance_days": 1,
+  "flights": [
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 7350.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "6E",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 250.0,
+      "fare_family": "BASIC",
+      "flight_number": "6E-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 410.0,
+      "total_fare": 9159.0
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 7791.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "AI",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 250.0,
+      "fare_family": "BASIC",
+      "flight_number": "AI-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 432.05,
+      "total_fare": 9622.05
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 6982.5,
+      "cabin_class": "ECONOMY",
+      "carrier": "SG",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 250.0,
+      "fare_family": "BASIC",
+      "flight_number": "SG-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 391.62,
+      "total_fare": 8773.12
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 7129.5,
+      "cabin_class": "ECONOMY",
+      "carrier": "QP",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 250.0,
+      "fare_family": "BASIC",
+      "flight_number": "QP-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 398.98,
+      "total_fare": 8927.48
+    }
+  ],
+  "route": "BLR-HYD",
+  "status": "OK",
+  "travel_date": "2026-09-03"
+}

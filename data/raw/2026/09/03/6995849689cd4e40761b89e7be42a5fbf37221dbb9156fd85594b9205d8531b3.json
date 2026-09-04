@@ -1,0 +1,72 @@
+{
+  "advance_days": 1,
+  "flights": [
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 15190.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "6E",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "6E-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 802.0,
+      "total_fare": 17491.0
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 16101.4,
+      "cabin_class": "ECONOMY",
+      "carrier": "AI",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "AI-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 847.57,
+      "total_fare": 18447.97
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 14430.5,
+      "cabin_class": "ECONOMY",
+      "carrier": "SG",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "SG-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 764.03,
+      "total_fare": 16693.53
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 14734.3,
+      "cabin_class": "ECONOMY",
+      "carrier": "QP",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "QP-301",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 779.22,
+      "total_fare": 17012.52
+    }
+  ],
+  "route": "DEL-IXS",
+  "status": "OK",
+  "travel_date": "2026-09-03"
+}

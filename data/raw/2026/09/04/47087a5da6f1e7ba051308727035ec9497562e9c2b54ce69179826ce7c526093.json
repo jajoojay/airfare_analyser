@@ -1,0 +1,72 @@
+{
+  "advance_days": 30,
+  "flights": [
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4752.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "6E",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "6E-3030",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 280.1,
+      "total_fare": 6531.1
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 5037.12,
+      "cabin_class": "ECONOMY",
+      "carrier": "AI",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "AI-3030",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 294.36,
+      "total_fare": 6830.48
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4514.4,
+      "cabin_class": "ECONOMY",
+      "carrier": "SG",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "SG-3030",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 268.22,
+      "total_fare": 6281.62
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 4609.44,
+      "cabin_class": "ECONOMY",
+      "carrier": "QP",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 350.0,
+      "fare_family": "BASIC",
+      "flight_number": "QP-3030",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 272.97,
+      "total_fare": 6381.41
+    }
+  ],
+  "route": "DEL-MAA",
+  "status": "OK",
+  "travel_date": "2026-10-02"
+}

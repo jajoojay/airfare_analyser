@@ -1,0 +1,72 @@
+{
+  "advance_days": 7,
+  "flights": [
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 5760.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "6E",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 250.0,
+      "fare_family": "BASIC",
+      "flight_number": "6E-307",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 330.5,
+      "total_fare": 7489.5
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 6105.6,
+      "cabin_class": "ECONOMY",
+      "carrier": "AI",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 250.0,
+      "fare_family": "BASIC",
+      "flight_number": "AI-307",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 347.78,
+      "total_fare": 7852.38
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 5472.0,
+      "cabin_class": "ECONOMY",
+      "carrier": "SG",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 250.0,
+      "fare_family": "BASIC",
+      "flight_number": "SG-307",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 316.1,
+      "total_fare": 7187.1
+    },
+    {
+      "arrival_time": "10:45",
+      "availability_status": "AVAILABLE",
+      "base_fare": 5587.2,
+      "cabin_class": "ECONOMY",
+      "carrier": "QP",
+      "convenience_fee": 299.0,
+      "departure_time": "08:30",
+      "development_fee": 250.0,
+      "fare_family": "BASIC",
+      "flight_number": "QP-307",
+      "fuel_surcharge": 850.0,
+      "stops": 0,
+      "tax_amount": 321.86,
+      "total_fare": 7308.06
+    }
+  ],
+  "route": "BOM-MAA",
+  "status": "OK",
+  "travel_date": "2026-09-09"
+}
